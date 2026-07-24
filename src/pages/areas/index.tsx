@@ -116,7 +116,7 @@ export default function AreasPage() {
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Nome</TableHead>
-                  <TableHead className="w-24">Acoes</TableHead>
+                  <TableHead className="w-24">Açoes</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -56,7 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-svh">
       <aside className="hidden w-56 shrink-0 border-r bg-sidebar text-sidebar-foreground lg:block">
         <div className="flex h-14 items-center border-b px-4">
-          <span className="text-lg font-semibold">FinanceControl</span>
+          <span className="text-lg font-semibold">Finance Control</span>
         </div>
         <div className="p-3">
           <NavLinks />
@@ -75,14 +75,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             />
             <SheetContent side="left" className="w-56 p-0">
               <div className="flex h-14 items-center border-b px-4">
-                <span className="text-lg font-semibold">FinanceControl</span>
+                <span className="text-lg font-semibold">Finance Control</span>
               </div>
               <div className="p-3">
                 <NavLinks onNavigate={() => setOpen(false)} />
               </div>
             </SheetContent>
           </Sheet>
-          <span className="text-lg font-semibold">FinanceControl</span>
+          <span className="text-lg font-semibold">Finance Control</span>
         </header>
 
         <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>

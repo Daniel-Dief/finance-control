@@ -166,7 +166,7 @@ export default function TransactionsPage() {
                   <TableHead>Area</TableHead>
                   <TableHead>Categoria</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
-                  <TableHead className="w-24">Acoes</TableHead>
+                  <TableHead className="w-24">Açoes</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

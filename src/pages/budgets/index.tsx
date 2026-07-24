@@ -174,7 +174,7 @@ export default function BudgetsPage() {
                   <TableHead>Periodo</TableHead>
                   <TableHead>Area</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
-                  <TableHead className="w-24">Acoes</TableHead>
+                  <TableHead className="w-24">Açoes</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
