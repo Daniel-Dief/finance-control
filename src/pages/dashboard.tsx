@@ -1,42 +1,88 @@
+import { useState } from "react"
 import { useFetch } from "@/hooks/use-fetch"
-import { areasApi, budgetsApi, transactionsApi } from "@/api"
+import { areasApi, budgetsApi, categoriesApi, transactionsApi } from "@/api"
 import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { SearchableSelect } from "@/components/searchable-select"
 import {
   ArrowDown,
   ArrowUp,
   CurrencyCircleDollar,
   CreditCard,
   Receipt,
+  FunnelSimple,
+  X,
 } from "@phosphor-icons/react"
+
+const MONTHS = [
+  "Janeiro",
+  "Fevereiro",
+  "Marco",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+]
+
+const currentYear = new Date().getFullYear()
+const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i)
 
 export default function Dashboard() {
   const now = new Date()
-  const monthLabel = format(now, "MMMM yyyy", { locale: ptBR })
+
+  const [filterYear, setFilterYear] = useState<string>(
+    String(now.getFullYear())
+  )
+  const [filterMonth, setFilterMonth] = useState<string>(
+    String(now.getMonth() + 1)
+  )
+  const [filterAreaId, setFilterAreaId] = useState<string>("")
+  const [filterCategoryId, setFilterCategoryId] = useState<string>("")
 
   const { data: areas, loading: loadingAreas } = useFetch(
     () => areasApi.list(),
     []
   )
+  const { data: categories, loading: loadingCategories } = useFetch(
+    () => categoriesApi.list(),
+    []
+  )
   const { data: budgets, loading: loadingBudgets } = useFetch(
     () =>
-      budgetsApi.list({ year: now.getFullYear(), month: now.getMonth() + 1 }),
-    []
+      budgetsApi.list({
+        year: parseInt(filterYear),
+        month: parseInt(filterMonth),
+        ...(filterAreaId ? { areaId: parseInt(filterAreaId) } : {}),
+      }),
+    [filterYear, filterMonth, filterAreaId]
   )
   const { data: transactions, loading: loadingTx } = useFetch(
     () =>
       transactionsApi.list({
         from: format(
-          new Date(now.getFullYear(), now.getMonth(), 1),
+          new Date(parseInt(filterYear), parseInt(filterMonth) - 1, 1),
           "yyyy-MM-dd"
         ),
-        to: format(now, "yyyy-MM-dd"),
+        to: format(
+          new Date(
+            parseInt(filterYear),
+            parseInt(filterMonth),
+            0
+          ),
+          "yyyy-MM-dd"
+        ),
       }),
-    []
+    [filterYear, filterMonth]
   )
 
-  const loading = loadingAreas || loadingBudgets || loadingTx
+  const loading =
+    loadingAreas || loadingCategories || loadingBudgets || loadingTx
 
   if (loading) {
     return (
@@ -47,8 +93,18 @@ export default function Dashboard() {
   }
 
   const areaList = areas ?? []
+  const catList = categories ?? []
   const budgetList = budgets ?? []
-  const txList = transactions ?? []
+  let txList = transactions ?? []
+
+  if (filterAreaId) {
+    txList = txList.filter((t) => t.areaId === parseInt(filterAreaId))
+  }
+  if (filterCategoryId) {
+    txList = txList.filter(
+      (t) => t.categoryId === parseInt(filterCategoryId)
+    )
+  }
 
   const totalIncome = txList
     .filter((t) => t.type === "income")
@@ -58,14 +114,85 @@ export default function Dashboard() {
     .reduce((sum, t) => sum + t.amount, 0)
   const totalBudget = budgetList.reduce((sum, b) => sum + b.amount, 0)
 
+  const monthLabel = `${MONTHS[parseInt(filterMonth) - 1]} ${filterYear}`
+
   const getAreaName = (id: number) =>
     areaList.find((a) => a.id === id)?.name ?? "---"
+
+  const areaOptions = areaList.map((a) => ({
+    value: String(a.id),
+    label: a.name,
+  }))
+
+  const categoryOptions = catList.map((c) => ({
+    value: String(c.id),
+    label: c.name,
+  }))
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-sm text-muted-foreground capitalize">{monthLabel}</p>
+      </div>
+
+      <div className="flex flex-wrap items-end gap-4 rounded-md border p-3">
+        <FunnelSimple className="mb-1 h-4 w-4 text-muted-foreground" />
+        <div className="min-w-36 space-y-1">
+          <Label className="text-xs">Ano</Label>
+          <SearchableSelect
+            options={YEARS.map((y) => ({
+              value: String(y),
+              label: String(y),
+            }))}
+            value={filterYear}
+            onValueChange={setFilterYear}
+            placeholder="Ano"
+          />
+        </div>
+        <div className="min-w-36 space-y-1">
+          <Label className="text-xs">Mes</Label>
+          <SearchableSelect
+            options={MONTHS.map((m, i) => ({
+              value: String(i + 1),
+              label: m,
+            }))}
+            value={filterMonth}
+            onValueChange={setFilterMonth}
+            placeholder="Mes"
+          />
+        </div>
+        <div className="min-w-36 space-y-1">
+          <Label className="text-xs">Area</Label>
+          <SearchableSelect
+            options={areaOptions}
+            value={filterAreaId}
+            onValueChange={setFilterAreaId}
+            placeholder="Todas"
+          />
+        </div>
+        <div className="min-w-50 space-y-1">
+          <Label className="text-xs">Categoria</Label>
+          <SearchableSelect
+            options={categoryOptions}
+            value={filterCategoryId}
+            onValueChange={setFilterCategoryId}
+            placeholder="Todas"
+          />
+        </div>
+        {(filterAreaId || filterCategoryId) && (
+          <button
+            type="button"
+            onClick={() => {
+              setFilterAreaId("")
+              setFilterCategoryId("")
+            }}
+            className="mb-0.5 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-3 w-3" />
+            Limpar filtros
+          </button>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -127,7 +254,7 @@ export default function Dashboard() {
           <CardContent>
             {txList.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nenhuma transacao este mes.
+                Nenhuma transacao encontrada.
               </p>
             ) : (
               <div className="space-y-3">
@@ -174,7 +301,7 @@ export default function Dashboard() {
           <CardContent>
             {budgetList.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nenhum orcamento este mes.
+                Nenhum orcamento encontrado.
               </p>
             ) : (
               <div className="space-y-3">
