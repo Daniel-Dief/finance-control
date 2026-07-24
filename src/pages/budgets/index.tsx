@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
+import { SearchableSelect } from "@/components/searchable-select"
 import {
   Select,
   SelectContent,
@@ -296,21 +297,15 @@ export default function BudgetsPage() {
             </div>
             <div className="space-y-2">
               <Label>Area</Label>
-              <Select
+              <SearchableSelect
+                options={areaList.map((a) => ({
+                  value: String(a.id),
+                  label: a.name,
+                }))}
                 value={formAreaId}
-                onValueChange={(v) => setFormAreaId(v ?? "")}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma area" />
-                </SelectTrigger>
-                <SelectContent>
-                  {areaList.map((a) => (
-                    <SelectItem key={a.id} value={String(a.id)}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onValueChange={setFormAreaId}
+                placeholder="Selecione uma area"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="budget-amount">Valor (R$)</Label>

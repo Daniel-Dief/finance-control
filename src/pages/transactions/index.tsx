@@ -12,13 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { SearchableSelect } from "@/components/searchable-select"
 import {
   Table,
   TableBody,
@@ -33,6 +27,11 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Plus, Pencil, Trash } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { format } from "date-fns"
+
+const TYPE_OPTIONS = [
+  { value: "expense", label: "Despesa" },
+  { value: "income", label: "Receita" },
+]
 
 export default function TransactionsPage() {
   const [refreshKey, setRefreshKey] = useState(0)
@@ -49,7 +48,7 @@ export default function TransactionsPage() {
   const [formAmount, setFormAmount] = useState("")
   const [formType, setFormType] = useState<TransactionType>("expense")
   const [formAreaId, setFormAreaId] = useState<string>("")
-  const [formCategoryId, setFormCategoryId] = useState<string>("none")
+  const [formCategoryId, setFormCategoryId] = useState<string>("")
   const [saving, setSaving] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deletingTx, setDeletingTx] = useState<Transaction | null>(null)
@@ -61,7 +60,7 @@ export default function TransactionsPage() {
     setFormAmount("")
     setFormType("expense")
     setFormAreaId("")
-    setFormCategoryId("none")
+    setFormCategoryId("")
     setDialogOpen(true)
   }
 
@@ -71,7 +70,7 @@ export default function TransactionsPage() {
     setFormAmount(String(t.amount))
     setFormType(t.type)
     setFormAreaId(String(t.areaId))
-    setFormCategoryId(t.categoryId ? String(t.categoryId) : "none")
+    setFormCategoryId(t.categoryId ? String(t.categoryId) : "")
     setDialogOpen(true)
   }
 
@@ -79,6 +78,10 @@ export default function TransactionsPage() {
     const amount = parseFloat(formAmount)
     if (!formAreaId) {
       toast.error("Selecione uma area")
+      return
+    }
+    if (!formCategoryId) {
+      toast.error("Selecione uma categoria")
       return
     }
     if (isNaN(amount) || amount <= 0) {
@@ -93,7 +96,7 @@ export default function TransactionsPage() {
         amount,
         type: formType,
         areaId: parseInt(formAreaId),
-        categoryId: formCategoryId === "none" ? null : parseInt(formCategoryId),
+        categoryId: parseInt(formCategoryId),
       }
       if (editing) {
         await transactionsApi.update(editing.id, data)
@@ -269,18 +272,12 @@ export default function TransactionsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Tipo</Label>
-                <Select
+                <SearchableSelect
+                  options={TYPE_OPTIONS}
                   value={formType}
                   onValueChange={(v) => setFormType(v as TransactionType)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="expense">Despesa</SelectItem>
-                    <SelectItem value="income">Receita</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder="Selecione o tipo"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tx-date">Data</Label>
@@ -294,40 +291,27 @@ export default function TransactionsPage() {
             </div>
             <div className="space-y-2">
               <Label>Area</Label>
-              <Select
+              <SearchableSelect
+                options={areaList.map((a) => ({
+                  value: String(a.id),
+                  label: a.name,
+                }))}
                 value={formAreaId}
-                onValueChange={(v) => setFormAreaId(v ?? "")}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma area" />
-                </SelectTrigger>
-                <SelectContent>
-                  {areaList.map((a) => (
-                    <SelectItem key={a.id} value={String(a.id)}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onValueChange={setFormAreaId}
+                placeholder="Selecione uma area"
+              />
             </div>
             <div className="space-y-2">
-              <Label>Categoria (opcional)</Label>
-              <Select
+              <Label>Categoria</Label>
+              <SearchableSelect
+                options={catList.map((c) => ({
+                  value: String(c.id),
+                  label: c.name,
+                }))}
                 value={formCategoryId}
-                onValueChange={(v) => setFormCategoryId(v ?? "")}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sem categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Sem categoria</SelectItem>
-                  {catList.map((c) => (
-                    <SelectItem key={c.id} value={String(c.id)}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onValueChange={setFormCategoryId}
+                placeholder="Selecione uma categoria"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="tx-amount">Valor (R$)</Label>
