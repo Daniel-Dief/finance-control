@@ -1,20 +1,26 @@
-import { Button } from "@/components/ui/button"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Layout } from "@/components/layout"
+import Dashboard from "@/pages/dashboard"
+import AreasPage from "@/pages/areas"
+import CategoriesPage from "@/pages/categories"
+import BudgetsPage from "@/pages/budgets"
+import TransactionsPage from "@/pages/transactions"
+import { Toaster } from "@/components/ui/sonner"
 
 export function App() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/areas" element={<AreasPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/budgets" element={<BudgetsPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
+        </Routes>
+      </Layout>
+      <Toaster />
+    </BrowserRouter>
   )
 }
 
