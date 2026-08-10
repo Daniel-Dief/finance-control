@@ -23,6 +23,7 @@ export function SearchableSelect({
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1)
+  const containerRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const listRef = React.useRef<HTMLDivElement>(null)
 
@@ -45,6 +46,20 @@ export function SearchableSelect({
       item?.scrollIntoView({ block: "nearest" })
     }
   }, [highlightedIndex])
+
+  React.useEffect(() => {
+    if (!open) return
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [open])
 
   function select(val: string) {
     onValueChange(val)
@@ -76,7 +91,7 @@ export function SearchableSelect({
   }
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
         type="button"
         onClick={() => (open ? setOpen(false) : openDropdown())}
