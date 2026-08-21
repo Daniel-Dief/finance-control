@@ -1,7 +1,11 @@
 import { useState } from "react"
 import { useFetch } from "@/hooks/use-fetch"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { areasApi, budgetsApi, categoriesApi, transactionsApi } from "@/api"
 import { format } from "date-fns"
+import { BarChart } from "@mui/x-charts/BarChart"
+import { LineChart } from "@mui/x-charts/LineChart"
+import { PieChart } from "@mui/x-charts/PieChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { SearchableSelect } from "@/components/searchable-select"
@@ -33,8 +37,39 @@ const MONTHS = [
 const currentYear = new Date().getFullYear()
 const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i)
 
+const INCOME_COLOR = "#10b981"
+const EXPENSE_COLOR = "#ef4444"
+const BALANCE_COLOR = "#3b82f6"
+
+const PIE_COLORS = [
+  "#3b82f6",
+  "#f59e0b",
+  "#8b5cf6",
+  "#ec4899",
+  "#14b8a6",
+  "#f97316",
+  "#84cc16",
+  "#6366f1",
+]
+
+const brl = (v: number) =>
+  v.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 2,
+  })
+
+const brlCompact = (v: number) =>
+  v.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  })
+
 export default function Dashboard() {
   const now = new Date()
+  const isMobile = useIsMobile()
 
   const [filterYear, setFilterYear] = useState<string>(
     String(now.getFullYear())
@@ -118,6 +153,94 @@ export default function Dashboard() {
 
   const getAreaName = (id: number) =>
     areaList.find((a) => a.id === id)?.name ?? "---"
+
+  const daysInMonth = new Date(
+    parseInt(filterYear),
+    parseInt(filterMonth),
+    0
+  ).getDate()
+  const dayLabels = Array.from(
+    { length: daysInMonth },
+    (_, i) => String(i + 1)
+  )
+  const dailyIncome = Array.from({ length: daysInMonth }, () => 0)
+  const dailyExpense = Array.from({ length: daysInMonth }, () => 0)
+  for (const t of txList) {
+    const day = parseInt(t.date.slice(8, 10), 10)
+    if (t.type === "income") {
+      dailyIncome[day - 1] += t.amount
+    } else {
+      dailyExpense[day - 1] += t.amount
+    }
+  }
+  let accIncome = 0
+  const cumulativeIncome = dailyIncome.map((v) => {
+    accIncome += v
+    return accIncome
+  })
+  let accExpense = 0
+  const cumulativeExpense = dailyExpense.map((v) => {
+    accExpense += v
+    return accExpense
+  })
+  let acc = 0
+  const cumulativeBalance = dailyIncome.map((v, i) => {
+    acc += v - dailyExpense[i]
+    return acc
+  })
+
+  const weekCount = Math.ceil(daysInMonth / 7)
+  const weeklyLabels: string[] = []
+  const weeklyIncome: number[] = []
+  const weeklyExpense: number[] = []
+  const weeklyBalance: number[] = []
+  for (let w = 0; w < weekCount; w++) {
+    const startDay = w * 7 + 1
+    const endDay = Math.min(startDay + 6, daysInMonth)
+    weeklyLabels.push(`${startDay}-${endDay}`)
+    const idx = endDay - 1
+    weeklyIncome.push(cumulativeIncome[idx])
+    weeklyExpense.push(cumulativeExpense[idx])
+    weeklyBalance.push(cumulativeBalance[idx])
+  }
+
+  const axisTickLabelStyle = {
+    fill: "var(--muted-foreground)",
+    fontSize: isMobile ? 9 : 11,
+  }
+
+  const expensesByCategory = new Map<string, number>()
+  for (const t of txList) {
+    if (t.type !== "expense") continue
+    const name =
+      catList.find((c) => c.id === t.categoryId)?.name ?? "Sem categoria"
+    expensesByCategory.set(
+      name,
+      (expensesByCategory.get(name) ?? 0) + t.amount
+    )
+  }
+  const pieData = Array.from(expensesByCategory.entries())
+    .map(([label, value], i) => ({
+      id: label,
+      label,
+      value,
+      color: PIE_COLORS[i % PIE_COLORS.length],
+    }))
+    .sort((a, b) => b.value - a.value)
+
+  const activeAreas = areaList.filter((a) =>
+    txList.some((t) => t.areaId === a.id)
+  )
+  const incomePerArea = activeAreas.map((a) =>
+    txList
+      .filter((t) => t.areaId === a.id && t.type === "income")
+      .reduce((sum, t) => sum + t.amount, 0)
+  )
+  const expensePerArea = activeAreas.map((a) =>
+    txList
+      .filter((t) => t.areaId === a.id && t.type === "expense")
+      .reduce((sum, t) => sum + t.amount, 0)
+  )
 
   const areaOptions = areaList.map((a) => ({
     value: String(a.id),
@@ -242,6 +365,176 @@ export default function Dashboard() {
             <div className="text-2xl font-bold">
               R$ {totalBudget.toFixed(2)}
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Evolucao do Mes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {txList.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Nenhuma transacao encontrada.
+            </p>
+          ) : (
+            <LineChart
+              height={isMobile ? 240 : 300}
+              margin={{ left: isMobile ? 0 : 8, right: isMobile ? 0 : 8 }}
+              colors={[INCOME_COLOR, EXPENSE_COLOR, BALANCE_COLOR]}
+              xAxis={[
+                {
+                  scaleType: "point",
+                  data: isMobile ? weeklyLabels : dayLabels,
+                  tickLabelStyle: axisTickLabelStyle,
+                  ...(isMobile
+                    ? {}
+                    : {
+                        tickLabelInterval: (_, i) =>
+                          !(i % 5 === 0 || i === dayLabels.length - 1),
+                      }),
+                },
+              ]}
+              yAxis={[
+                {
+                  valueFormatter: (value: number) =>
+                    isMobile ? brlCompact(value) : brl(value),
+                  tickLabelStyle: axisTickLabelStyle,
+                },
+              ]}
+              series={[
+                {
+                  label: "Receitas Acumuladas",
+                  data: isMobile ? weeklyIncome : cumulativeIncome,
+                  curve: "linear",
+                  showMark: false,
+                  valueFormatter: (v) => brl(Number(v)),
+                },
+                {
+                  label: "Despesas Acumuladas",
+                  data: isMobile ? weeklyExpense : cumulativeExpense,
+                  curve: "linear",
+                  showMark: false,
+                  valueFormatter: (v) => brl(Number(v)),
+                },
+                {
+                  label: "Saldo",
+                  data: isMobile ? weeklyBalance : cumulativeBalance,
+                  curve: "linear",
+                  showMark: false,
+                  valueFormatter: (v) => brl(Number(v)),
+                },
+              ]}
+              grid={{ horizontal: true }}
+              slotProps={{
+                legend: {
+                  direction: "horizontal",
+                  position: { vertical: "bottom", horizontal: "center" },
+                  sx: {
+                    color: "var(--muted-foreground)",
+                    fontSize: isMobile ? 10 : 12,
+                  },
+                },
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Despesas por Categoria</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {pieData.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhuma despesa registrada neste periodo.
+              </p>
+            ) : (
+              <PieChart
+                height={isMobile ? 260 : 300}
+                margin={{ left: 16, right: 16 }}
+                series={[
+                  {
+                    data: pieData,
+                    innerRadius: isMobile ? 45 : 55,
+                    outerRadius: isMobile ? 75 : 90,
+                    paddingAngle: 2,
+                    cornerRadius: 4,
+                  },
+                ]}
+                slotProps={{
+                  legend: {
+                    direction: "horizontal",
+                    position: { vertical: "bottom", horizontal: "center" },
+                    sx: {
+                      color: "var(--muted-foreground)",
+                      fontSize: isMobile ? 10 : 12,
+                    },
+                  },
+                }}
+              />
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Receitas x Despesas por Area
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {activeAreas.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhuma transacao encontrada.
+              </p>
+            ) : (
+              <BarChart
+                height={isMobile ? 240 : 300}
+                margin={{ left: isMobile ? 0 : 8, right: isMobile ? 0 : 8 }}
+                colors={[INCOME_COLOR, EXPENSE_COLOR]}
+                xAxis={[
+                  {
+                    scaleType: "band",
+                    data: activeAreas.map((a) => getAreaName(a.id)),
+                    tickLabelStyle: axisTickLabelStyle,
+                  },
+                ]}
+                yAxis={[
+                  {
+                    valueFormatter: (value: number) =>
+                      isMobile ? brlCompact(value) : brl(value),
+                    tickLabelStyle: axisTickLabelStyle,
+                  },
+                ]}
+                series={[
+                  {
+                    label: "Receitas",
+                    data: incomePerArea,
+                    valueFormatter: (v) => brl(Number(v)),
+                  },
+                  {
+                    label: "Despesas",
+                    data: expensePerArea,
+                    valueFormatter: (v) => brl(Number(v)),
+                  },
+                ]}
+                grid={{ horizontal: true }}
+                slotProps={{
+                  legend: {
+                    direction: "horizontal",
+                    position: { vertical: "bottom", horizontal: "center" },
+                    sx: {
+                      color: "var(--muted-foreground)",
+                      fontSize: isMobile ? 10 : 12,
+                    },
+                  },
+                }}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
