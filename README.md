@@ -1,21 +1,39 @@
-# React + TypeScript + Vite + shadcn/ui
+# Vite & HeroUI Template
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+This is a template for creating applications using Vite and HeroUI (v3).
 
-## Adding components
+[Try it on CodeSandbox](https://githubbox.com/heroui-inc/vite-template)
 
-To add components to your app, run the following command:
+## Technologies Used
+
+- [Vite](https://vitejs.dev/guide/)
+- [HeroUI v3](https://heroui.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Tailwind Variants](https://tailwind-variants.org)
+- [TypeScript](https://www.typescriptlang.org)
+
+## How to Use
+
+To clone the project, run the following command:
 
 ```bash
-npx shadcn@latest add button
+git clone https://github.com/heroui-inc/vite-template.git
 ```
 
-This will place the ui components in the `src/components` directory.
+### Install dependencies
 
-## Using components
+You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button"
+```bash
+npm install
 ```
+
+### Run the development server
+
+```bash
+npm run dev
+```
+
+## License
+
+Licensed under the [MIT license](https://github.com/heroui-inc/vite-template/blob/main/LICENSE).

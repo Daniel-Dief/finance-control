@@ -1,27 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Layout } from "@/components/layout"
-import Dashboard from "@/pages/dashboard"
-import AreasPage from "@/pages/areas"
-import CategoriesPage from "@/pages/categories"
-import BudgetsPage from "@/pages/budgets"
-import TransactionsPage from "@/pages/transactions"
-import { Toaster } from "@/components/ui/sonner"
+import { Route, Routes } from "react-router-dom";
 
-export function App() {
+import IndexPage from "@/pages/index";
+import DocsPage from "@/pages/docs";
+import PricingPage from "@/pages/pricing";
+import BlogPage from "@/pages/blog";
+import AboutPage from "@/pages/about";
+
+function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/areas" element={<AreasPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/budgets" element={<BudgetsPage />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-        </Routes>
-      </Layout>
-      <Toaster />
-    </BrowserRouter>
-  )
+    <Routes>
+      <Route element={<IndexPage />} path="/" />
+      <Route element={<DocsPage />} path="/docs" />
+      <Route element={<PricingPage />} path="/pricing" />
+      <Route element={<BlogPage />} path="/blog" />
+      <Route element={<AboutPage />} path="/about" />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
