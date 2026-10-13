@@ -2,11 +2,11 @@ import { Card } from "@heroui/react";
 import { LoginForm, RegisterForm } from "@/components/forms";
 import { useState } from "react";
 import GradientWaves from "@/components/ui/GradientWaves";
-import { ThemeStore } from "@/stores/themeStore";
+import { useThemeStore } from "@/stores/themeStore";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const { theme } = ThemeStore();
+  const { theme } = useThemeStore();
 
   const colors = {
     horizonColor: theme === "light" ? "#3300ff" : "#5227FF",
@@ -40,18 +40,17 @@ export default function LoginPage() {
           grainIntensity={0.05}
         />
       </div>
-      <Card className="w-full max-w-md">
-        {
-          !isLogin ?
-            <Card.Header>
-              <Card.Title
-                className="text-center text-2xl"
-              >
-                Crie sua conta
-              </Card.Title>
-            </Card.Header>
-          : null
-        }
+      <Card className={`w-full max-w-md rounded-lg ${theme === "dark" ? "bg-[#101828]" : ""}`}>
+        <Card.Header>
+          <Card.Title
+            className={`text-center text-2xl ${theme === "dark" ? "text-white" : ""}`}
+          >
+            {
+              isLogin ? "Entrar" : "Crie sua conta"
+            }
+            
+          </Card.Title>
+        </Card.Header>
         {
             isLogin ?
             <LoginForm
