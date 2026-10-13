@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Spinner } from "@heroui/react";
+import { Spinner, Toast } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { ThemeProvider } from "@/components/theme-provider";
 import { authService, isTokenExpired } from "@/services/authService";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -80,17 +81,17 @@ export function Provider({ children }: { children: React.ReactNode }) {
     }
   }, [isInitialized, isLoggedIn, location.pathname, navigate]);
 
-  if (!isInitialized) {
-    return <AuthLoading />;
-  }
-
   const isPublic = PUBLIC_PATHS.includes(location.pathname);
 
-  if (!isLoggedIn && !isPublic) {
-    return <AuthLoading />;
-  }
+  const content =
+    !isInitialized || (!isLoggedIn && !isPublic) ? <AuthLoading /> : children;
 
-  return <>{children}</>;
+  return (
+    <ThemeProvider>
+      <Toast.Provider />
+      {content}
+    </ThemeProvider>
+  );
 }
 
 function AuthLoading() {

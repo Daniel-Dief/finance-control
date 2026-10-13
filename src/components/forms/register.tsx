@@ -14,7 +14,6 @@ import {
 
 import { authService } from "@/services/authService";
 import { useAuthStore } from "@/stores/authStore";
-import { useThemeStore } from "@/stores/themeStore";
 
 interface Props {
   setIsLogin: Dispatch<SetStateAction<boolean>>;
@@ -23,7 +22,6 @@ interface Props {
 export default function RegisterForm({ setIsLogin }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { theme } = useThemeStore();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,29 +65,17 @@ export default function RegisterForm({ setIsLogin }: Props) {
             </Alert>
           )}
           <TextField autoFocus isRequired name="login">
-            <Label
-              className={theme === "dark" ? "text-white" : ""}
-            >
-              Login
-            </Label>
+            <Label>Login</Label>
             <Input placeholder="Seu login" variant="secondary" />
             <FieldError />
           </TextField>
           <TextField isRequired name="name">
-            <Label
-              className={theme === "dark" ? "text-white" : ""}
-            >
-              Nome
-            </Label>
+            <Label>Nome</Label>
             <Input placeholder="Seu nome completo" variant="secondary" />
             <FieldError />
           </TextField>
           <TextField isRequired minLength={6} name="password" type="password">
-            <Label
-              className={theme === "dark" ? "text-white" : ""}
-            >
-              Senha
-            </Label>
+            <Label>Senha</Label>
             <Input placeholder="••••••••" variant="secondary" />
             <FieldError>Digite uma senha com pelo menos 6 caracteres</FieldError>
           </TextField>

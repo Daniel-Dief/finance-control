@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Dispatch, FormEvent, SetStateAction } from "react";
-import { useThemeStore } from "@/stores/themeStore";
 import axios from "axios";
 import {
   Alert,
@@ -23,7 +22,6 @@ interface Props {
 export default function LoginForm({ setIsLogin }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { theme } = useThemeStore();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,20 +62,12 @@ export default function LoginForm({ setIsLogin }: Props) {
             </Alert>
           )}
           <TextField autoFocus isRequired name="login">
-            <Label
-              className={theme === "dark" ? "text-white" : ""}
-            >
-              Login
-            </Label>
+            <Label>Login</Label>
             <Input placeholder="Seu login" variant="secondary" />
             <FieldError />
           </TextField>
           <TextField isRequired minLength={6} name="password" type="password">
-            <Label
-              className={theme === "dark" ? "text-white" : ""}
-            >
-              Senha
-            </Label>
+            <Label>Senha</Label>
             <Input placeholder="******" variant="secondary" />
             <FieldError>Digite uma senha com pelo menos 6 caracteres</FieldError>
           </TextField>

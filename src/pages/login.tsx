@@ -2,20 +2,20 @@ import { Card } from "@heroui/react";
 import { LoginForm, RegisterForm } from "@/components/forms";
 import { useState } from "react";
 import GradientWaves from "@/components/ui/GradientWaves";
-import { useThemeStore } from "@/stores/themeStore";
+import { useThemeContext } from "@/components/theme-provider";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const { theme } = useThemeStore();
+  const { resolvedTheme } = useThemeContext();
 
   const colors = {
-    horizonColor: theme === "light" ? "#3300ff" : "#5227FF",
-    waveColor: theme === "light" ? "#3401ff" : "#FF9FFC",
-    crestColor: theme === "light" ? "#350ed4" : "#FFFFFF",
+    horizonColor: resolvedTheme === "light" ? "#3300ff" : "#5227FF",
+    waveColor: resolvedTheme === "light" ? "#3401ff" : "#FF9FFC",
+    crestColor: resolvedTheme === "light" ? "#350ed4" : "#FFFFFF",
   }
 
   return (
-    <div className={`w-full h-screen relative flex justify-center items-center ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+    <div className={`w-full h-screen relative flex justify-center items-center ${resolvedTheme === "light" ? "bg-white" : "bg-gray-900"}`}>
       <div className="w-full h-full absolute">
         <GradientWaves
           horizonColor={colors.horizonColor}
@@ -40,10 +40,10 @@ export default function LoginPage() {
           grainIntensity={0.05}
         />
       </div>
-      <Card className={`w-full max-w-md rounded-lg ${theme === "dark" ? "bg-[#101828]" : ""}`}>
+      <Card className={`w-full max-w-md rounded-lg ${resolvedTheme === "dark" ? "bg-[#101828]" : ""}`}>
         <Card.Header>
           <Card.Title
-            className={`text-center text-2xl ${theme === "dark" ? "text-white" : ""}`}
+            className={`text-center text-2xl ${resolvedTheme === "dark" ? "text-white" : ""}`}
           >
             {
               isLogin ? "Entrar" : "Crie sua conta"

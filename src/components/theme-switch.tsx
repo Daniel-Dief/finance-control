@@ -1,21 +1,17 @@
-import { FC, useCallback } from "react";
-import { useTheme } from "@heroui/react";
+import { FC } from "react";
 import clsx from "clsx";
 
 import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
+import { useThemeContext } from "@/components/theme-provider";
 
 export interface ThemeSwitchProps {
   className?: string;
 }
 
 export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className }) => {
-  const { resolvedTheme, setTheme } = useTheme("light");
+  const { resolvedTheme, toggleTheme } = useThemeContext();
 
   const isLight = resolvedTheme === "light";
-
-  const toggleTheme = useCallback(() => {
-    setTheme(isLight ? "dark" : "light");
-  }, [isLight, setTheme]);
 
   if (!resolvedTheme) {
     return <div aria-hidden className="h-6 w-6" />;
