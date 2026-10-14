@@ -1,3 +1,5 @@
+export type { PaginatedResult } from "./pagination";
+
 export interface Area {
   id: number;
   name: string;
@@ -6,12 +8,4 @@ export interface Area {
 
 export interface AreaPayload {
   name: string;
-}
-
-export interface PaginatedResult<T> {
-  data: T[];
-  page: number;
-  limit: number;
-  total: number;
-  total_pages: number;
 }
