@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 const NAV_ITEMS = [
   { label: "Início", href: "/" },
   { label: "Áreas", href: "/areas" },
+  { label: "Categorias", href: "/categories" },
   { label: "Orçamentos", href: "/budgets" },
 ];
 
