@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { AlertDialog, Button, toast } from "@heroui/react";
-import axios from "axios";
+import { toast } from "@heroui/react";
 
 import { categoryService } from "@/services/categoryService";
 import type { Category } from "@/types/category";
+import { DeleteDialog } from "@/components/DeleteDialog"; 
+import { deleteCategoriesValidate } from "@/utils/mapErros";
 
 interface CategoryDeleteDialogProps {
   isOpen: boolean;
@@ -33,8 +34,10 @@ export default function CategoryDeleteDialog({
       onDeleted(category);
       onOpenChange(false);
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 404) {
-        toast.danger("Categoria não encontrada. Ela pode já ter sido removida.");
+      const errorMessage = deleteCategoriesValidate(err);
+
+      if (errorMessage) {
+        toast.danger(errorMessage);
         onDeleted(category);
         onOpenChange(false);
 
@@ -48,33 +51,13 @@ export default function CategoryDeleteDialog({
   }
 
   return (
-    <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialog.Container>
-        <AlertDialog.Dialog>
-          <AlertDialog.Header>
-            <AlertDialog.Icon status="danger" />
-            <AlertDialog.Heading>Excluir categoria?</AlertDialog.Heading>
-          </AlertDialog.Header>
-          <AlertDialog.Body>
-            <p>
-              Tem certeza que deseja excluir <strong>{category?.name}</strong>?
-              Essa ação não pode ser desfeita.
-            </p>
-          </AlertDialog.Body>
-          <AlertDialog.Footer>
-            <Button variant="tertiary" onPress={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button
-              isPending={isDeleting}
-              variant="danger"
-              onPress={handleDelete}
-            >
-              {({ isPending }) => (isPending ? "Excluindo..." : "Excluir")}
-            </Button>
-          </AlertDialog.Footer>
-        </AlertDialog.Dialog>
-      </AlertDialog.Container>
-    </AlertDialog.Backdrop>
+    <DeleteDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      handleDelete={handleDelete}
+      isDeleting={isDeleting}
+      title="Excluir categoria?"
+      name={category?.name || ""}
+    />
   );
 }

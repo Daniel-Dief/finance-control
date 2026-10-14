@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import {
-  Button,
-  Drawer,
   FieldError,
   Form,
   Input,
   Label,
   TextField,
   toast,
-  useMediaQuery,
 } from "@heroui/react";
-import axios from "axios";
 
+import { formsCategoriesErrors } from "@/utils/mapErros";
+import { FormDrawer } from "@/components/FormDrawer";
+import { formsCategoriesValidate } from "@/utils/validation";
 import { categoryService } from "@/services/categoryService";
 import type { Category } from "@/types/category";
 
@@ -19,7 +18,7 @@ interface CategoryFormDrawerProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   category: Category | null;
-  onSaved: (category: Category) => void;
+  onSaved: () => void;
 }
 
 export default function CategoryFormDrawer({
@@ -29,7 +28,6 @@ export default function CategoryFormDrawer({
   onSaved,
 }: CategoryFormDrawerProps) {
   const isEditing = Boolean(category);
-  const isMobile = useMediaQuery("(max-width: 640px)");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,12 +39,11 @@ export default function CategoryFormDrawer({
     }
   }, [isOpen, category]);
 
-  async function submit() {
-    const trimmed = name.trim();
+  async function onSubmit() {
+    const validateResult = formsCategoriesValidate(name);
 
-    if (!trimmed) {
-      setError("Informe o nome da categoria.");
-
+    if (!validateResult.isValid) {
+      setError(validateResult.errors.name);
       return;
     }
 
@@ -55,33 +52,20 @@ export default function CategoryFormDrawer({
 
     try {
       if (isEditing && category) {
-        const updated = await categoryService.update(category.id, { name: trimmed });
-
+        await categoryService.update(category.id, { name: name.trim() });
         toast.success("Categoria atualizada com sucesso.");
-        onSaved(updated);
       } else {
-        const created = await categoryService.create({ name: trimmed });
-
+        await categoryService.create({ name: name.trim() });
         toast.success("Categoria criada com sucesso.");
-        onSaved(created);
       }
 
+      onSaved();
       onOpenChange(false);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const status = err.response?.status;
-
-        if (status === 409) {
-          setError("Já existe uma categoria com esse nome.");
-
-          return;
-        }
-
-        if (status === 400) {
-          setError("Dados inválidos. Verifique o nome informado.");
-
-          return;
-        }
+      const errorMessage = formsCategoriesErrors(err);
+      if (errorMessage) {
+        setError(formsCategoriesErrors(err));
+        return;
       }
 
       toast.danger("Não foi possível salvar a categoria. Tente novamente.");
@@ -91,51 +75,33 @@ export default function CategoryFormDrawer({
   }
 
   return (
-    <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Drawer.Content placement={isMobile ? "bottom" : "right"}>
-        <Drawer.Dialog>
-          <Drawer.Handle />
-          <Drawer.CloseTrigger />
-          <Drawer.Header>
-            <Drawer.Heading>
-              {isEditing ? "Editar categoria" : "Nova categoria"}
-            </Drawer.Heading>
-          </Drawer.Header>
-          <Drawer.Body>
-            <Form
-              className="flex flex-col gap-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                submit();
-              }}
-            >
-              <TextField
-                autoFocus
-                isRequired
-                isInvalid={Boolean(error)}
-                name="name"
-                value={name}
-                onChange={setName}
-              >
-                <Label>Nome</Label>
-                <Input placeholder="Ex.: Alimentação" variant="secondary" />
-                <FieldError>{error}</FieldError>
-              </TextField>
-              <Button style={{ display: "none" }} type="submit">
-                Salvar
-              </Button>
-            </Form>
-          </Drawer.Body>
-          <Drawer.Footer>
-            <Button variant="tertiary" onPress={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button isPending={isSaving} variant="primary" onPress={submit}>
-              {({ isPending }) => (isPending ? "Salvando..." : "Salvar")}
-            </Button>
-          </Drawer.Footer>
-        </Drawer.Dialog>
-      </Drawer.Content>
-    </Drawer.Backdrop>
+    <FormDrawer
+      title={isEditing ? "Editar categoria" : "Nova categoria"}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      isSaving={isSaving}
+      onSubmit={onSubmit}
+    >
+      <Form
+        className="flex flex-col gap-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit();
+        }}
+      >
+        <TextField
+          autoFocus
+          isRequired
+          isInvalid={Boolean(error)}
+          name="name"
+          value={name}
+          onChange={setName}
+        >
+          <Label>Nome</Label>
+          <Input placeholder="Ex.: Alimentação" variant="secondary" />
+          <FieldError>{error}</FieldError>
+        </TextField>
+      </Form>
+    </FormDrawer>
   );
 }
