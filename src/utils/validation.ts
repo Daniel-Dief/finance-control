@@ -68,3 +68,17 @@ export function formsBudgetsValidate(props: formsBudgetsValidateProps) : Validat
     error: ""
   }
 }
+
+export function formsAreasValidate(name : string) : ValidateResult {
+  if (!name.trim()) {
+    return {
+      isValid: false,
+      error: "Informe o nome da área."
+    }
+  }
+
+  return {
+      isValid: true,
+      error: ""
+  }
+}

@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import {
-  Button,
-  Drawer,
   FieldError,
   Form,
   Input,
   Label,
   TextField,
   toast,
-  useMediaQuery,
 } from "@heroui/react";
-import axios from "axios";
 
 import { areaService } from "@/services/areaService";
 import type { Area } from "@/types/area";
+import { FormDrawer } from "../FormDrawer";
+import { formsAreasValidate } from "@/utils/validation";
+import { formsAreasErros } from "@/utils/mapErros";
 
 interface AreaFormDrawerProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   area: Area | null;
-  onSaved: (area: Area) => void;
+  onSaved: () => void;
 }
 
 export default function AreaFormDrawer({
@@ -29,7 +28,6 @@ export default function AreaFormDrawer({
   onSaved,
 }: AreaFormDrawerProps) {
   const isEditing = Boolean(area);
-  const isMobile = useMediaQuery("(max-width: 640px)");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,12 +39,11 @@ export default function AreaFormDrawer({
     }
   }, [isOpen, area]);
 
-  async function submit() {
-    const trimmed = name.trim();
+  async function onSubmit() {
+    const validateResult = formsAreasValidate(name);
 
-    if (!trimmed) {
-      setError("Informe o nome da área.");
-
+    if (!validateResult.isValid) {
+      setError(validateResult.error);
       return;
     }
 
@@ -55,33 +52,21 @@ export default function AreaFormDrawer({
 
     try {
       if (isEditing && area) {
-        const updated = await areaService.update(area.id, { name: trimmed });
-
+        await areaService.update(area.id, { name: name.trim() });
         toast.success("Área atualizada com sucesso.");
-        onSaved(updated);
       } else {
-        const created = await areaService.create({ name: trimmed });
-
+        await areaService.create({ name: name.trim() });
         toast.success("Área criada com sucesso.");
-        onSaved(created);
       }
 
+      onSaved();
       onOpenChange(false);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const status = err.response?.status;
-
-        if (status === 409) {
-          setError("Já existe uma área com esse nome.");
-
-          return;
-        }
-
-        if (status === 400) {
-          setError("Dados inválidos. Verifique o nome informado.");
-
-          return;
-        }
+      const errorMessage = formsAreasErros(err);
+      
+      if (errorMessage) {
+        setError(errorMessage);
+        return;
       }
 
       toast.danger("Não foi possível salvar a área. Tente novamente.");
@@ -91,51 +76,33 @@ export default function AreaFormDrawer({
   }
 
   return (
-    <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Drawer.Content placement={isMobile ? "bottom" : "right"}>
-        <Drawer.Dialog>
-          <Drawer.Handle />
-          <Drawer.CloseTrigger />
-          <Drawer.Header>
-            <Drawer.Heading>
-              {isEditing ? "Editar área" : "Nova área"}
-            </Drawer.Heading>
-          </Drawer.Header>
-          <Drawer.Body>
-            <Form
-              className="flex flex-col gap-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                submit();
-              }}
-            >
-              <TextField
-                autoFocus
-                isRequired
-                isInvalid={Boolean(error)}
-                name="name"
-                value={name}
-                onChange={setName}
-              >
-                <Label>Nome</Label>
-                <Input placeholder="Ex.: Alimentação" variant="secondary" />
-                <FieldError>{error}</FieldError>
-              </TextField>
-              <Button style={{ display: "none" }} type="submit">
-                Salvar
-              </Button>
-            </Form>
-          </Drawer.Body>
-          <Drawer.Footer>
-            <Button variant="tertiary" onPress={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button isPending={isSaving} variant="primary" onPress={submit}>
-              {({ isPending }) => (isPending ? "Salvando..." : "Salvar")}
-            </Button>
-          </Drawer.Footer>
-        </Drawer.Dialog>
-      </Drawer.Content>
-    </Drawer.Backdrop>
+    <FormDrawer
+      isOpen={isOpen}
+      isSaving={isSaving}
+      onOpenChange={onOpenChange}
+      onSubmit={onSubmit}
+      title={isEditing ? "Editar área" : "Nova área"}
+    >    
+      <Form
+        className="flex flex-col gap-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit();
+        }}
+      >
+        <TextField
+          autoFocus
+          isRequired
+          isInvalid={Boolean(error)}
+          name="name"
+          value={name}
+          onChange={setName}
+        >
+          <Label>Nome</Label>
+          <Input placeholder="Ex.: Alimentação" variant="secondary" />
+          <FieldError>{error}</FieldError>
+        </TextField>
+      </Form>
+    </FormDrawer>
   );
 }
