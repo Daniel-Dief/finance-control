@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { AlertDialog, Button, toast } from "@heroui/react";
-import axios from "axios";
+import { toast } from "@heroui/react";
 
 import { budgetService } from "@/services/budgetService";
 import type { Budget } from "@/types/budget";
 import { formatPeriod } from "@/utils/format";
+import { DeleteDialog } from "../DeleteDialog";
+import { deleteBudgetsValidate } from "@/utils/mapErros";
 
 interface BudgetDeleteDialogProps {
   isOpen: boolean;
@@ -36,8 +37,10 @@ export default function BudgetDeleteDialog({
       onDeleted(budget);
       onOpenChange(false);
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 404) {
-        toast.danger("Orçamento não encontrado. Ele pode já ter sido removido.");
+      const errorMessage = deleteBudgetsValidate(err);
+
+      if (errorMessage) {
+        toast.danger(errorMessage);
         onDeleted(budget);
         onOpenChange(false);
 
@@ -51,37 +54,15 @@ export default function BudgetDeleteDialog({
   }
 
   return (
-    <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialog.Container>
-        <AlertDialog.Dialog>
-          <AlertDialog.Header>
-            <AlertDialog.Icon status="danger" />
-            <AlertDialog.Heading>Excluir orçamento?</AlertDialog.Heading>
-          </AlertDialog.Header>
-          <AlertDialog.Body>
-            <p>
-              Tem certeza que deseja excluir o orçamento de{" "}
-              <strong>{areaName}</strong> para{" "}
-              <strong>
-                {budget ? formatPeriod(budget.month, budget.year) : ""}
-              </strong>
-              ? Essa ação não pode ser desfeita.
-            </p>
-          </AlertDialog.Body>
-          <AlertDialog.Footer>
-            <Button variant="tertiary" onPress={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button
-              isPending={isDeleting}
-              variant="danger"
-              onPress={handleDelete}
-            >
-              {({ isPending }) => (isPending ? "Excluindo..." : "Excluir")}
-            </Button>
-          </AlertDialog.Footer>
-        </AlertDialog.Dialog>
-      </AlertDialog.Container>
-    </AlertDialog.Backdrop>
+    <DeleteDialog
+      isOpen={isOpen}
+      handleDelete={handleDelete}
+      onOpenChange={onOpenChange}
+      isDeleting={isDeleting}
+      name={
+        `${areaName} - ${budget ? formatPeriod(budget.month, budget.year) : ""}`
+      }
+      title="Excluir orçamento?"
+    />
   );
 }

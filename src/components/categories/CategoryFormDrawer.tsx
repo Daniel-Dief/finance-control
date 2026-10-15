@@ -43,7 +43,7 @@ export default function CategoryFormDrawer({
     const validateResult = formsCategoriesValidate(name);
 
     if (!validateResult.isValid) {
-      setError(validateResult.errors.name);
+      setError(validateResult.error);
       return;
     }
 
@@ -63,8 +63,9 @@ export default function CategoryFormDrawer({
       onOpenChange(false);
     } catch (err) {
       const errorMessage = formsCategoriesErrors(err);
+      
       if (errorMessage) {
-        setError(formsCategoriesErrors(err));
+        setError(errorMessage);
         return;
       }
 
