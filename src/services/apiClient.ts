@@ -21,7 +21,9 @@ interface RetryQueueItem {
   reject: (reason?: unknown) => void;
 }
 
-let isRefreshing = false;
+type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+
+let refreshPromise: Promise<string | null> | null = null;
 let retryQueue: RetryQueueItem[] = [];
 
 apiClient.interceptors.request.use((config) => {
@@ -57,46 +59,77 @@ export async function refreshToken(): Promise<string | null> {
   }
 }
 
+/**
+ * Garante que apenas um refresh aconteça por vez. Todas as requisições que
+ * receberem 401 enquanto o refresh está em andamento compartilham a mesma
+ * promise, evitando chamadas concorrentes a `/auth/login`.
+ */
+function getRefreshPromise(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = refreshToken().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
+
+function flushQueue(token: string | null, error: AxiosError) {
+  const queue = retryQueue;
+
+  retryQueue = [];
+
+  queue.forEach(({ config, resolve, reject }) => {
+    if (!token) {
+      reject(error);
+
+      return;
+    }
+
+    config.headers.Authorization = `Bearer ${token}`;
+    resolve(apiClient(config));
+  });
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as
-      | (InternalAxiosRequestConfig & { _retry?: boolean })
-      | undefined;
+    const originalRequest = error.config as RetriableConfig | undefined;
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
+    const isUnauthorized = error.response?.status === 401;
+
+    if (!isUnauthorized || !originalRequest || originalRequest._retry) {
       return Promise.reject(error);
     }
 
-    if (isRefreshing) {
+    originalRequest._retry = true;
+
+    // Se já existe um refresh em andamento, aguarda na fila e é reprocessada
+    // assim que o novo token estiver disponível.
+    if (refreshPromise) {
       return new Promise((resolve, reject) => {
         retryQueue.push({ config: originalRequest, resolve, reject });
       });
     }
 
-    originalRequest._retry = true;
-    isRefreshing = true;
+    const refresh = getRefreshPromise();
 
-    const newToken = await refreshToken();
+    // A requisição que disparou o refresh também entra na fila, para ser
+    // reprocessada junto com as demais quando o token for renovado.
+    const retried = new Promise((resolve, reject) => {
+      retryQueue.push({ config: originalRequest, resolve, reject });
+    });
 
-    if (newToken) {
-      originalRequest.headers.Authorization = `Bearer ${newToken}`;
+    try {
+      const newToken = await refresh;
 
-      retryQueue.forEach(({ config, resolve, reject }) => {
-        config.headers.Authorization = `Bearer ${newToken}`;
-        apiClient(config).then(resolve).catch(reject);
-      });
-    } else {
-      retryQueue.forEach(({ reject }) => reject(error));
+      flushQueue(newToken, error);
+    } catch (refreshError) {
+      flushQueue(null, error);
+
+      throw refreshError;
     }
 
-    retryQueue = [];
-    isRefreshing = false;
-
-    if (newToken) {
-      return apiClient(originalRequest);
-    }
-
-    return Promise.reject(error);
+    return retried;
   },
 );

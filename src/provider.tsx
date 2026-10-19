@@ -3,7 +3,8 @@ import { Spinner, Toast } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { authService, isTokenExpired } from "@/services/authService";
+import { refreshToken } from "@/services/apiClient";
+import { isTokenExpired } from "@/services/authService";
 import { useAuthStore } from "@/stores/authStore";
 
 const PUBLIC_PATHS = ["/login", "/register", "/logout"];
@@ -20,14 +21,11 @@ export function Provider({ children }: { children: React.ReactNode }) {
       const state = useAuthStore.getState();
 
       if (state.user && state.password) {
-        try {
-          const { token, user } = await authService.login({
-            login: state.user.login,
-            password: state.password,
-          });
+        // Reaproveita o fluxo de refresh (sessão única, sem corrida com o
+        // interceptor de 401).
+        const token = await refreshToken();
 
-          state.login(token, user, state.password);
-        } catch {
+        if (!token) {
           state.logout();
         }
       }
@@ -51,16 +49,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
       }
 
       if (isTokenExpired(state.token)) {
-        try {
-          const { token, user } = await authService.login({
-            login: state.user.login,
-            password: state.password,
-          });
-
-          state.login(token, user, state.password);
-        } catch {
-          state.logout();
-        }
+        await refreshToken();
       }
     }, REFRESH_INTERVAL_MS);
 

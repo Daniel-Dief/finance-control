@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: "Áreas", href: "/areas" },
   { label: "Categorias", href: "/categories" },
   { label: "Orçamentos", href: "/budgets" },
+  { label: "Transações", href: "/transactions" },
 ];
 
 export default function Navbar() {

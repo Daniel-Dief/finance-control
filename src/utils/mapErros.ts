@@ -70,3 +70,26 @@ export function deleteAreasValidate(err : AxiosError | any) : string | null {
     } else 
     return null;
 }
+
+export function formsTransactionsErrors(err : AxiosError | any) : string | null{
+    if(!axios.isAxiosError(err)) return null;
+    const status = err.response?.status;
+
+    if (status === 400) {
+        return "Dados inválidos. Verifique os campos informados.";
+    } else
+    if (status === 404) {
+        return "Transação não encontrada. Ela pode já ter sido removida.";
+    } else 
+    return null;
+}
+
+export function deleteTransactionsValidate(err : AxiosError | any) : string | null{
+    if(!axios.isAxiosError(err)) return null;
+    const status = err.response?.status;
+
+    if (status === 404) {
+        return "Transação não encontrada. Ela pode já ter sido removida.";
+    } else
+    return null;
+}

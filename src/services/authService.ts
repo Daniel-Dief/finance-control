@@ -12,13 +12,25 @@ function decodeJwtPayload(value: string): Record<string, unknown> {
   return JSON.parse(decodeURIComponent(escape(atob(base64))));
 }
 
-export function isTokenExpired(token: string): boolean {
+/**
+ * Margem de segurança: renova o token um pouco antes de expirar para evitar
+ * que uma requisição saia com um token prestes a vencer.
+ */
+const EXPIRY_SKEW_MS = 30_000;
+
+export function isTokenExpired(token: string, skewMs = EXPIRY_SKEW_MS): boolean {
   try {
     const payload = decodeJwtPayload(token.split(".")[1] ?? "");
 
-    return typeof payload.exp === "number" && Date.now() >= payload.exp * 1000;
+    if (typeof payload.exp !== "number") {
+      // Sem `exp` não há como garantir validade — trata como expirado.
+      return true;
+    }
+
+    return Date.now() >= payload.exp * 1000 - skewMs;
   } catch {
-    return false;
+    // Token malformado é considerado inválido.
+    return true;
   }
 }
 

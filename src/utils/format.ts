@@ -48,3 +48,42 @@ export function formatPeriod(month: number, year: number): string {
 
   return `${name} de ${year}`;
 }
+
+export function formatDateByString(date: string): string {
+  const dateObj = new Date(date);
+  const day = dateObj.getDate().toString().padStart(2, "0");
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+  const year = dateObj.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+function pad(value: number): string {
+  return value.toString().padStart(2, "0");
+}
+
+/**
+ * Converte um Date para o formato aceito pela API (AAAA-MM-DD).
+ */
+export function formatDateToApi(date: Date): string {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/**
+ * Retorna o primeiro e o último dia de um mês no formato aceito pela API.
+ * Os filtros `from`/`to` da API trabalham com o ano corrente.
+ */
+export function getMonthRange(month: number): { from: string; to: string } {
+  const year = new Date().getFullYear();
+  const lastDay = new Date(year, month, 0).getDate();
+
+  return {
+    from: `${year}-${pad(month)}-01`,
+    to: `${year}-${pad(month)}-${pad(lastDay)}`,
+  };
+}
+
+export function getCurrentMonth(): string {
+  const month = new Date().getMonth();
+  return String(MONTH_OPTIONS[month].value);
+}
