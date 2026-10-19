@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import type { Category } from "@/types/category";
+
+import { useState } from "react";
 import {
   FieldError,
   Form,
@@ -12,7 +14,6 @@ import { formsCategoriesErrors } from "@/utils/mapErros";
 import { FormDrawer } from "@/components/FormDrawer";
 import { formsCategoriesValidate } from "@/utils/validation";
 import { categoryService } from "@/services/categoryService";
-import type { Category } from "@/types/category";
 
 interface CategoryFormDrawerProps {
   isOpen: boolean;
@@ -28,22 +29,27 @@ export default function CategoryFormDrawer({
   onSaved,
 }: CategoryFormDrawerProps) {
   const isEditing = Boolean(category);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(category?.name ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const currentFormKey = isOpen ? String(category?.id ?? "new") : null;
+  const [formKey, setFormKey] = useState(currentFormKey);
 
-  useEffect(() => {
+  if (currentFormKey !== formKey) {
+    setFormKey(currentFormKey);
+
     if (isOpen) {
       setName(category?.name ?? "");
       setError(null);
     }
-  }, [isOpen, category]);
+  }
 
   async function onSubmit() {
     const validateResult = formsCategoriesValidate(name);
 
     if (!validateResult.isValid) {
       setError(validateResult.error);
+
       return;
     }
 
@@ -63,9 +69,10 @@ export default function CategoryFormDrawer({
       onOpenChange(false);
     } catch (err) {
       const errorMessage = formsCategoriesErrors(err);
-      
+
       if (errorMessage) {
         setError(errorMessage);
+
         return;
       }
 
@@ -77,10 +84,10 @@ export default function CategoryFormDrawer({
 
   return (
     <FormDrawer
-      title={isEditing ? "Editar categoria" : "Nova categoria"}
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
       isSaving={isSaving}
+      title={isEditing ? "Editar categoria" : "Nova categoria"}
+      onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >
       <Form
@@ -91,7 +98,6 @@ export default function CategoryFormDrawer({
         }}
       >
         <TextField
-          autoFocus
           isRequired
           isInvalid={Boolean(error)}
           name="name"

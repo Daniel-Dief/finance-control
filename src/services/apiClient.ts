@@ -1,7 +1,8 @@
+import type { LoginResponse } from "@/types/auth";
+
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 import { useAuthStore } from "@/stores/authStore";
-import type { LoginResponse } from "@/types/auth";
 
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:1323";
 

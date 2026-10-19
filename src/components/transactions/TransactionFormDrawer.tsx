@@ -1,5 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
 import type { DateValue, Key } from "@heroui/react";
+import type { Area } from "@/types/area";
+import type { Category } from "@/types/category";
+import type { Transaction, TransactionType } from "@/types/transaction";
+
+import { useMemo, useState } from "react";
 import {
   Alert,
   Calendar,
@@ -17,12 +21,10 @@ import {
 } from "@heroui/react";
 import { getLocalTimeZone, parseDate } from "@internationalized/date";
 
-import { transactionService } from "@/services/transactionService";
-import type { Area } from "@/types/area";
-import type { Category } from "@/types/category";
-import type { Transaction, TransactionType } from "@/types/transaction";
-import { formatCurrencyFromCents, formatDateToApi } from "@/utils/format";
 import { FormDrawer } from "../FormDrawer";
+
+import { transactionService } from "@/services/transactionService";
+import { formatCurrencyFromCents, formatDateToApi } from "@/utils/format";
 import { formsTransactionsValidate } from "@/utils/validation";
 import { formsTransactionsErrors } from "@/utils/mapErros";
 
@@ -45,32 +47,44 @@ export default function TransactionFormDrawer({
 }: TransactionFormDrawerProps) {
   const isEditing = Boolean(transaction);
 
-  const [type, setType] = useState<TransactionType>("expense");
-  const [areaId, setAreaId] = useState<Key | null>(null);
-  const [categoryId, setCategoryId] = useState<Key | null>(null);
-  const [amountCents, setAmountCents] = useState<number | null>(null);
-  const [dateSelected, setDateSelected] = useState<DateValue | null>(null);
+  const [type, setType] = useState<TransactionType>(
+    transaction?.type ?? "expense",
+  );
+  const [areaId, setAreaId] = useState<Key | null>(
+    transaction ? String(transaction.area_id) : null,
+  );
+  const [categoryId, setCategoryId] = useState<Key | null>(
+    transaction ? String(transaction.category_id) : null,
+  );
+  const [amountCents, setAmountCents] = useState<number | null>(
+    transaction ? transaction.amount : null,
+  );
+  const [dateSelected, setDateSelected] = useState<DateValue | null>(() =>
+    transaction ? parseDate(transaction.date.slice(0, 10)) : null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const currentFormKey = isOpen ? String(transaction?.id ?? "new") : null;
+  const [formKey, setFormKey] = useState(currentFormKey);
+
+  if (currentFormKey !== formKey) {
+    setFormKey(currentFormKey);
+
+    if (isOpen) {
+      setType(transaction?.type ?? "expense");
+      setAreaId(transaction ? String(transaction.area_id) : null);
+      setCategoryId(transaction ? String(transaction.category_id) : null);
+      setAmountCents(transaction ? transaction.amount : null);
+      setDateSelected(
+        transaction ? parseDate(transaction.date.slice(0, 10)) : null,
+      );
+      setError(null);
+    }
+  }
 
   const selectedKeys = useMemo(() => new Set<Key>([type]), [type]);
 
   const isFormDisabled = areas.length === 0 || categories.length === 0;
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    setType(transaction?.type ?? "expense");
-    setAreaId(transaction ? String(transaction.area_id) : null);
-    setCategoryId(transaction ? String(transaction.category_id) : null);
-    setAmountCents(transaction ? transaction.amount : null);
-    setDateSelected(
-      transaction ? parseDate(transaction.date.slice(0, 10)) : null,
-    );
-    setError(null);
-  }, [isOpen, transaction]);
 
   async function onSubmit() {
     const validated = formsTransactionsValidate({
@@ -143,14 +157,15 @@ export default function TransactionFormDrawer({
     }
   }
 
-  const amountText = amountCents === null ? "" : formatCurrencyFromCents(amountCents);
+  const amountText =
+    amountCents === null ? "" : formatCurrencyFromCents(amountCents);
 
   return (
     <FormDrawer
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      title={isEditing ? "Editar transação" : "Nova transação"}
       isSaving={isSaving}
+      title={isEditing ? "Editar transação" : "Nova transação"}
+      onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >
       <Form
@@ -187,20 +202,19 @@ export default function TransactionFormDrawer({
         <div className="flex flex-col gap-1">
           <Label>Tipo</Label>
           <ToggleButtonGroup
-            aria-label="Tipo da transação"
             fullWidth
+            aria-label="Tipo da transação"
             selectedKeys={selectedKeys}
             selectionMode="single"
             onSelectionChange={(keys) => {
               const next = [...keys][0];
+
               if (next) {
                 setType(next as TransactionType);
               }
             }}
           >
-            <ToggleButton id="expense">
-              Despesa
-            </ToggleButton>
+            <ToggleButton id="expense">Despesa</ToggleButton>
             <ToggleButton id="income">
               <ToggleButtonGroup.Separator />
               Receita
@@ -209,9 +223,9 @@ export default function TransactionFormDrawer({
         </div>
 
         <Select
+          isRequired
           className="w-full"
           isDisabled={areas.length === 0}
-          isRequired
           name="area_id"
           placeholder="Selecione uma área"
           value={areaId}
@@ -239,9 +253,9 @@ export default function TransactionFormDrawer({
         </Select>
 
         <Select
+          isRequired
           className="w-full"
           isDisabled={categories.length === 0}
-          isRequired
           name="category_id"
           placeholder="Selecione uma categoria"
           value={categoryId}

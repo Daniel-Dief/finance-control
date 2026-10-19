@@ -1,5 +1,6 @@
-import { apiClient } from "@/services/apiClient";
 import type { Area, AreaPayload, PaginatedResult } from "@/types/area";
+
+import { apiClient } from "@/services/apiClient";
 
 export interface AreaListParams {
   name?: string;

@@ -1,9 +1,5 @@
 import { ReactNode } from "react";
-import {
-  Button,
-  Drawer,
-  useMediaQuery,
-} from "@heroui/react";
+import { Button, Drawer, useMediaQuery } from "@heroui/react";
 
 interface FormDrawerProps {
   title: string;
@@ -20,7 +16,7 @@ export function FormDrawer({
   onOpenChange,
   isSaving,
   onSubmit,
-  children
+  children,
 }: FormDrawerProps) {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
@@ -31,13 +27,9 @@ export function FormDrawer({
           <Drawer.Handle />
           <Drawer.CloseTrigger />
           <Drawer.Header>
-            <Drawer.Heading>
-              {title}
-            </Drawer.Heading>
+            <Drawer.Heading>{title}</Drawer.Heading>
           </Drawer.Header>
-          <Drawer.Body>
-            {children}
-          </Drawer.Body>
+          <Drawer.Body>{children}</Drawer.Body>
           <Drawer.Footer>
             <Button variant="tertiary" onPress={() => onOpenChange(false)}>
               Cancelar

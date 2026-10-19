@@ -85,5 +85,6 @@ export function getMonthRange(month: number): { from: string; to: string } {
 
 export function getCurrentMonth(): string {
   const month = new Date().getMonth();
+
   return String(MONTH_OPTIONS[month].value);
 }

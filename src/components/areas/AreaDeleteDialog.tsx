@@ -1,8 +1,11 @@
+import type { Area } from "@/types/area";
+
 import { useState } from "react";
 import { toast } from "@heroui/react";
+
 import { DeleteDialog } from "../DeleteDialog";
+
 import { areaService } from "@/services/areaService";
-import type { Area } from "@/types/area";
 import { deleteAreasValidate } from "@/utils/mapErros";
 
 interface AreaDeleteDialogProps {
@@ -51,12 +54,12 @@ export default function AreaDeleteDialog({
 
   return (
     <DeleteDialog
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      handleDelete={handleDelete}
       isDeleting={isDeleting}
+      isOpen={isOpen}
       name={area?.name ?? ""}
       title="Excluir área?"
-      handleDelete={handleDelete}
+      onOpenChange={onOpenChange}
     />
   );
 }

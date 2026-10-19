@@ -1,11 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 
+import CategoriesPage from "./pages/categories";
+import TransactionsPage from "./pages/transactions";
+
 import AreasPage from "@/pages/areas";
 import BudgetsPage from "@/pages/budgets";
 import IndexPage from "@/pages/index";
 import LoginPage from "@/pages/login";
-import CategoriesPage from "./pages/categories";
-import TransactionsPage from "./pages/transactions";
 
 function App() {
   return (

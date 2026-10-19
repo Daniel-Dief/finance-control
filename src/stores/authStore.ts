@@ -1,7 +1,7 @@
+import type { User } from "@/types/auth";
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-import type { User } from "@/types/auth";
 
 interface AuthStore {
   token: string | null;

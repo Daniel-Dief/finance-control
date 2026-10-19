@@ -1,5 +1,10 @@
+import type {
+  Category,
+  CategoryPayload,
+  PaginatedResult,
+} from "@/types/category";
+
 import { apiClient } from "@/services/apiClient";
-import type { Category, CategoryPayload, PaginatedResult } from "@/types/category";
 
 export interface CategoryListParams {
   name?: string;
@@ -20,7 +25,9 @@ function emptyPage(params: CategoryListParams): PaginatedResult<Category> {
 }
 
 export const categoryService = {
-  async list(params: CategoryListParams = {}): Promise<PaginatedResult<Category>> {
+  async list(
+    params: CategoryListParams = {},
+  ): Promise<PaginatedResult<Category>> {
     const { data } = await apiClient.get<PaginatedResult<Category> | null>(
       "/categories/list",
       { params },
@@ -39,12 +46,18 @@ export const categoryService = {
     return data;
   },
   async create(payload: CategoryPayload): Promise<Category> {
-    const { data } = await apiClient.post<Category>("/categories/create", payload);
+    const { data } = await apiClient.post<Category>(
+      "/categories/create",
+      payload,
+    );
 
     return data;
   },
   async update(id: number, payload: CategoryPayload): Promise<Category> {
-    const { data } = await apiClient.put<Category>(`/categories/${id}`, payload);
+    const { data } = await apiClient.put<Category>(
+      `/categories/${id}`,
+      payload,
+    );
 
     return data;
   },

@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Key } from "@heroui/react";
+import type { Area } from "@/types/area";
+import type { Category } from "@/types/category";
+import type { Transaction } from "@/types/transaction";
+
+import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Button,
@@ -12,14 +16,15 @@ import {
   Table,
 } from "@heroui/react";
 
-import { TransactionDeleteDialog, TransactionFormDrawer } from "@/components/transactions";
+import {
+  TransactionDeleteDialog,
+  TransactionFormDrawer,
+} from "@/components/transactions";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import DefaultLayout from "@/layouts/default";
 import { areaService } from "@/services/areaService";
 import { categoryService } from "@/services/categoryService";
 import { transactionService } from "@/services/transactionService";
-import type { Area } from "@/types/area";
-import type { Category } from "@/types/category";
-import type { Transaction } from "@/types/transaction";
 import {
   MONTH_OPTIONS,
   formatCurrencyFromCents,
@@ -78,17 +83,15 @@ export default function TransactionsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [areaFilter, setAreaFilter] = useState<Key | null>(ALL);
   const [categoryFilter, setCategoryFilter] = useState<Key | null>(ALL);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [monthFilter, setMonthFilter] = useState<Key | null>(getCurrentMonth());
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [formOpen, setFormOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null);
+  const [deletingTransaction, setDeletingTransaction] =
+    useState<Transaction | null>(null);
 
   const areaNames = useMemo(() => {
     const map = new Map<number, string>();
@@ -140,17 +143,14 @@ export default function TransactionsPage() {
     };
   }, []);
 
-  const loadTransactions = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const { data, error, isLoading, reload } = useAsyncData(
+    () => {
+      const range =
+        monthFilter && monthFilter !== ALL
+          ? getMonthRange(Number(monthFilter))
+          : undefined;
 
-    const range =
-      monthFilter && monthFilter !== ALL
-        ? getMonthRange(Number(monthFilter))
-        : undefined;
-
-    try {
-      const result = await transactionService.list({
+      return transactionService.list({
         area_id:
           areaFilter && areaFilter !== ALL ? Number(areaFilter) : undefined,
         category_id:
@@ -162,20 +162,13 @@ export default function TransactionsPage() {
         page,
         limit: PAGE_SIZE,
       });
+    },
+    [areaFilter, categoryFilter, monthFilter, page],
+    "Não foi possível carregar as transações. Tente novamente.",
+  );
 
-      setTransactions(result.data);
-      setTotalPages(Math.max(1, result.total_pages));
-    } catch {
-      setTransactions([]);
-      setError("Não foi possível carregar as transações. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [areaFilter, categoryFilter, monthFilter, page]);
-
-  useEffect(() => {
-    loadTransactions();
-  }, [loadTransactions]);
+  const transactions = data?.data ?? [];
+  const totalPages = Math.max(1, data?.total_pages ?? 1);
 
   function changeFilter(
     setter: (value: Key | null) => void,
@@ -204,7 +197,7 @@ export default function TransactionsPage() {
     if (transactions.length === 1 && page > 1) {
       setPage((current) => current - 1);
     } else {
-      loadTransactions();
+      reload();
     }
   }
 
@@ -214,7 +207,10 @@ export default function TransactionsPage() {
   ];
   const categoryOptions: FilterOption[] = [
     { label: "Todas as categorias", value: ALL },
-    ...categories.map((category) => ({ label: category.name, value: String(category.id) })),
+    ...categories.map((category) => ({
+      label: category.name,
+      value: String(category.id),
+    })),
   ];
   const monthOptions: FilterOption[] = [
     { label: "Todos os meses", value: ALL },
@@ -277,7 +273,7 @@ export default function TransactionsPage() {
                 <Alert.Description>{error}</Alert.Description>
               </Alert.Content>
             </Alert>
-            <Button variant="secondary" onPress={loadTransactions}>
+            <Button variant="secondary" onPress={reload}>
               Tentar novamente
             </Button>
           </div>
@@ -302,7 +298,9 @@ export default function TransactionsPage() {
                 >
                   {transactions.map((transaction) => (
                     <Table.Row key={transaction.id}>
-                      <Table.Cell>{formatDateByString(transaction.date)}</Table.Cell>
+                      <Table.Cell>
+                        {formatDateByString(transaction.date)}
+                      </Table.Cell>
                       <Table.Cell>
                         <Chip
                           color={
@@ -311,12 +309,18 @@ export default function TransactionsPage() {
                           size="sm"
                           variant="soft"
                         >
-                          {transaction.type === "income" ? "Receita" : "Despesa"}
+                          {transaction.type === "income"
+                            ? "Receita"
+                            : "Despesa"}
                         </Chip>
                       </Table.Cell>
                       <Table.Cell>{areaLabel(transaction.area_id)}</Table.Cell>
-                      <Table.Cell>{categoryLabel(transaction.category_id)}</Table.Cell>
-                      <Table.Cell>{formatCurrencyFromCents(transaction.amount)}</Table.Cell>
+                      <Table.Cell>
+                        {categoryLabel(transaction.category_id)}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {formatCurrencyFromCents(transaction.amount)}
+                      </Table.Cell>
                       <Table.Cell>
                         <div className="flex gap-2">
                           <Button
@@ -388,14 +392,14 @@ export default function TransactionsPage() {
       <TransactionFormDrawer
         areas={areas}
         categories={categories}
-        transaction={editingTransaction}
         isOpen={formOpen}
+        transaction={editingTransaction}
         onOpenChange={setFormOpen}
-        onSaved={loadTransactions}
+        onSaved={reload}
       />
       <TransactionDeleteDialog
-        transaction={deletingTransaction}
         isOpen={deleteOpen}
+        transaction={deletingTransaction}
         onDeleted={handleDeleted}
         onOpenChange={setDeleteOpen}
       />

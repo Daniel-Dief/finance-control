@@ -1,10 +1,12 @@
+import type { Budget } from "@/types/budget";
+
 import { useState } from "react";
 import { toast } from "@heroui/react";
 
-import { budgetService } from "@/services/budgetService";
-import type { Budget } from "@/types/budget";
-import { formatPeriod } from "@/utils/format";
 import { DeleteDialog } from "../DeleteDialog";
+
+import { budgetService } from "@/services/budgetService";
+import { formatPeriod } from "@/utils/format";
 import { deleteBudgetsValidate } from "@/utils/mapErros";
 
 interface BudgetDeleteDialogProps {
@@ -55,14 +57,12 @@ export default function BudgetDeleteDialog({
 
   return (
     <DeleteDialog
-      isOpen={isOpen}
       handleDelete={handleDelete}
-      onOpenChange={onOpenChange}
       isDeleting={isDeleting}
-      name={
-        `${areaName} - ${budget ? formatPeriod(budget.month, budget.year) : ""}`
-      }
+      isOpen={isOpen}
+      name={`${areaName} - ${budget ? formatPeriod(budget.month, budget.year) : ""}`}
       title="Excluir orçamento?"
+      onOpenChange={onOpenChange}
     />
   );
 }

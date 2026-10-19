@@ -1,4 +1,3 @@
-import { apiClient } from "@/services/apiClient";
 import type {
   Transaction,
   TransactionPayload,
@@ -6,6 +5,8 @@ import type {
   TransactionUpdatePayload,
   PaginatedResult,
 } from "@/types/transaction";
+
+import { apiClient } from "@/services/apiClient";
 
 export interface TransactionListParams {
   type?: TransactionType;
@@ -19,7 +20,9 @@ export interface TransactionListParams {
 
 const DEFAULT_LIMIT = 50;
 
-function emptyPage(params: TransactionListParams): PaginatedResult<Transaction> {
+function emptyPage(
+  params: TransactionListParams,
+): PaginatedResult<Transaction> {
   return {
     data: [],
     page: params.page ?? 1,
@@ -30,7 +33,9 @@ function emptyPage(params: TransactionListParams): PaginatedResult<Transaction> 
 }
 
 export const transactionService = {
-  async list(params: TransactionListParams = {}): Promise<PaginatedResult<Transaction>> {
+  async list(
+    params: TransactionListParams = {},
+  ): Promise<PaginatedResult<Transaction>> {
     const { data } = await apiClient.get<PaginatedResult<Transaction> | null>(
       "/transactions/list",
       { params },
@@ -49,12 +54,21 @@ export const transactionService = {
     return data;
   },
   async create(payload: TransactionPayload): Promise<Transaction> {
-    const { data } = await apiClient.post<Transaction>("/transactions/create", payload);
+    const { data } = await apiClient.post<Transaction>(
+      "/transactions/create",
+      payload,
+    );
 
     return data;
   },
-  async update(id: number, payload: TransactionUpdatePayload): Promise<Transaction> {
-    const { data } = await apiClient.put<Transaction>(`/transactions/${id}`, payload);
+  async update(
+    id: number,
+    payload: TransactionUpdatePayload,
+  ): Promise<Transaction> {
+    const { data } = await apiClient.put<Transaction>(
+      `/transactions/${id}`,
+      payload,
+    );
 
     return data;
   },

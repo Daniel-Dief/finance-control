@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import type { Area } from "@/types/area";
+
+import { useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -10,21 +12,17 @@ import {
 } from "@heroui/react";
 
 import { AreaDeleteDialog, AreaFormDrawer } from "@/components/areas";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import DefaultLayout from "@/layouts/default";
 import { areaService } from "@/services/areaService";
-import type { Area } from "@/types/area";
 import { getPageItems } from "@/utils/pagination";
 
 const PAGE_SIZE = 10;
 
 export default function AreasPage() {
-  const [areas, setAreas] = useState<Area[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingArea, setEditingArea] = useState<Area | null>(null);
@@ -40,30 +38,19 @@ export default function AreasPage() {
     return () => window.clearTimeout(timer);
   }, [search]);
 
-  const loadAreas = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await areaService.list({
+  const { data, error, isLoading, reload } = useAsyncData(
+    () =>
+      areaService.list({
         name: debouncedSearch || undefined,
         page,
         limit: PAGE_SIZE,
-      });
+      }),
+    [debouncedSearch, page],
+    "Não foi possível carregar as áreas. Tente novamente.",
+  );
 
-      setAreas(result.data);
-      setTotalPages(Math.max(1, result.total_pages));
-    } catch {
-      setAreas([]);
-      setError("Não foi possível carregar as áreas. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [debouncedSearch, page]);
-
-  useEffect(() => {
-    loadAreas();
-  }, [loadAreas]);
+  const areas = data?.data ?? [];
+  const totalPages = Math.max(1, data?.total_pages ?? 1);
 
   function openCreate() {
     setEditingArea(null);
@@ -84,7 +71,7 @@ export default function AreasPage() {
     if (areas.length === 1 && page > 1) {
       setPage((current) => current - 1);
     } else {
-      loadAreas();
+      reload();
     }
   }
 
@@ -132,7 +119,7 @@ export default function AreasPage() {
                 <Alert.Description>{error}</Alert.Description>
               </Alert.Content>
             </Alert>
-            <Button variant="secondary" onPress={loadAreas}>
+            <Button variant="secondary" onPress={reload}>
               Tentar novamente
             </Button>
           </div>
@@ -228,7 +215,7 @@ export default function AreasPage() {
         area={editingArea}
         isOpen={formOpen}
         onOpenChange={setFormOpen}
-        onSaved={loadAreas}
+        onSaved={reload}
       />
       <AreaDeleteDialog
         area={deletingArea}

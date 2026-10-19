@@ -1,5 +1,6 @@
-import { useState } from "react";
 import type { Dispatch, FormEvent, SetStateAction } from "react";
+
+import { useState } from "react";
 import axios from "axios";
 import {
   Alert,
@@ -56,7 +57,7 @@ export default function RegisterForm({ setIsLogin }: Props) {
       <Card.Content>
         <div className="flex flex-col gap-4">
           {error && (
-            <Alert status="danger" className="bg-red-100 text-red-800">
+            <Alert className="bg-red-100 text-red-800" status="danger">
               <Alert.Indicator />
               <Alert.Content>
                 <Alert.Title>Erro no registro</Alert.Title>
@@ -64,7 +65,7 @@ export default function RegisterForm({ setIsLogin }: Props) {
               </Alert.Content>
             </Alert>
           )}
-          <TextField autoFocus isRequired name="login">
+          <TextField isRequired name="login">
             <Label>Login</Label>
             <Input placeholder="Seu login" variant="secondary" />
             <FieldError />
@@ -77,22 +78,17 @@ export default function RegisterForm({ setIsLogin }: Props) {
           <TextField isRequired minLength={6} name="password" type="password">
             <Label>Senha</Label>
             <Input placeholder="••••••••" variant="secondary" />
-            <FieldError>Digite uma senha com pelo menos 6 caracteres</FieldError>
+            <FieldError>
+              Digite uma senha com pelo menos 6 caracteres
+            </FieldError>
           </TextField>
         </div>
       </Card.Content>
       <Card.Footer className="mt-4 flex justify-between gap-2">
-        <Button
-          onPress={() => setIsLogin(true)}
-          variant="tertiary"
-          >
+        <Button variant="tertiary" onPress={() => setIsLogin(true)}>
           Entrar
         </Button>
-        <Button
-          variant="primary"
-          type="submit"
-          isPending={isLoading}
-        >
+        <Button isPending={isLoading} type="submit" variant="primary">
           {({ isPending }) => (isPending ? "Cadastrando..." : "Cadastrar")}
         </Button>
       </Card.Footer>

@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
 import type { Key } from "@heroui/react";
+import type { Area } from "@/types/area";
+import type { Budget } from "@/types/budget";
+
+import { useState } from "react";
 import {
   Alert,
   Form,
@@ -12,11 +15,10 @@ import {
   toast,
 } from "@heroui/react";
 
-import { budgetService } from "@/services/budgetService";
-import type { Area } from "@/types/area";
-import type { Budget } from "@/types/budget";
-import { MONTH_OPTIONS, formatCurrencyFromCents } from "@/utils/format";
 import { FormDrawer } from "../FormDrawer";
+
+import { budgetService } from "@/services/budgetService";
+import { MONTH_OPTIONS, formatCurrencyFromCents } from "@/utils/format";
 import { formsBudgetsValidate } from "@/utils/validation";
 import { formsBudgestErrors } from "@/utils/mapErros";
 
@@ -39,36 +41,45 @@ export default function BudgetFormDrawer({
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  const [areaId, setAreaId] = useState<Key | null>(null);
-  const [month, setMonth] = useState<Key | null>(null);
-  const [year, setYear] = useState<number>(currentYear);
-  const [amountCents, setAmountCents] = useState<number | null>(null);
+  const [areaId, setAreaId] = useState<Key | null>(
+    budget ? String(budget.area_id) : null,
+  );
+  const [month, setMonth] = useState<Key | null>(
+    budget ? String(budget.month) : String(currentMonth),
+  );
+  const [year, setYear] = useState<number>(budget?.year ?? currentYear);
+  const [amountCents, setAmountCents] = useState<number | null>(
+    budget ? budget.amount : null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const currentFormKey = isOpen ? String(budget?.id ?? "new") : null;
+  const [formKey, setFormKey] = useState(currentFormKey);
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
+  if (currentFormKey !== formKey) {
+    setFormKey(currentFormKey);
+
+    if (isOpen) {
+      setAreaId(budget ? String(budget.area_id) : null);
+      setMonth(budget ? String(budget.month) : String(currentMonth));
+      setYear(budget?.year ?? currentYear);
+      setAmountCents(budget ? budget.amount : null);
+      setError(null);
     }
-
-    setAreaId(budget ? String(budget.area_id) : null);
-    setMonth(budget ? String(budget.month) : String(currentMonth));
-    setYear(budget?.year ?? currentYear);
-    setAmountCents(budget ? budget.amount : null);
-    setError(null);
-  }, [isOpen, budget, currentMonth, currentYear]);
+  }
 
   async function onSubmit() {
     const validated = formsBudgetsValidate({
-        areaSize: areas.length,
-        areaId,
-        month,
-        year,
-        amountCents,
+      areaSize: areas.length,
+      areaId,
+      month,
+      year,
+      amountCents,
     });
 
     if (!validated.isValid) {
       setError(validated.error);
+
       return;
     }
 
@@ -98,6 +109,7 @@ export default function BudgetFormDrawer({
 
       if (errorMessage) {
         setError(errorMessage);
+
         return;
       }
 
@@ -123,14 +135,15 @@ export default function BudgetFormDrawer({
     }
   }
 
-  const amountText = amountCents === null ? "" : formatCurrencyFromCents(amountCents);
+  const amountText =
+    amountCents === null ? "" : formatCurrencyFromCents(amountCents);
 
   return (
     <FormDrawer
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      title={isEditing ? "Editar orçamento" : "Novo orçamento"}
       isSaving={isSaving}
+      title={isEditing ? "Editar orçamento" : "Novo orçamento"}
+      onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >
       <Form
@@ -162,9 +175,9 @@ export default function BudgetFormDrawer({
         ) : null}
 
         <Select
+          isRequired
           className="w-full"
           isDisabled={areas.length === 0}
-          isRequired
           name="area_id"
           placeholder="Selecione uma área"
           value={areaId}
@@ -192,8 +205,8 @@ export default function BudgetFormDrawer({
         </Select>
 
         <Select
-          className="w-full"
           isRequired
+          className="w-full"
           name="month"
           placeholder="Selecione o mês"
           value={month}

@@ -1,10 +1,11 @@
-import { apiClient } from "@/services/apiClient";
 import type {
   LoginCredentials,
   LoginResponse,
   RegisterData,
   User,
 } from "@/types/auth";
+
+import { apiClient } from "@/services/apiClient";
 
 function decodeJwtPayload(value: string): Record<string, unknown> {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -18,7 +19,10 @@ function decodeJwtPayload(value: string): Record<string, unknown> {
  */
 const EXPIRY_SKEW_MS = 30_000;
 
-export function isTokenExpired(token: string, skewMs = EXPIRY_SKEW_MS): boolean {
+export function isTokenExpired(
+  token: string,
+  skewMs = EXPIRY_SKEW_MS,
+): boolean {
   try {
     const payload = decodeJwtPayload(token.split(".")[1] ?? "");
 
@@ -36,7 +40,10 @@ export function isTokenExpired(token: string, skewMs = EXPIRY_SKEW_MS): boolean 
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const { data } = await apiClient.post<LoginResponse>("/auth/login", credentials);
+    const { data } = await apiClient.post<LoginResponse>(
+      "/auth/login",
+      credentials,
+    );
 
     return data;
   },

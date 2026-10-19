@@ -15,9 +15,8 @@ export function DeleteDialog({
   handleDelete,
   isDeleting,
   title,
-  name
+  name,
 }: DeleteDialogProps) {
-
   return (
     <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
       <AlertDialog.Container>
@@ -28,8 +27,8 @@ export function DeleteDialog({
           </AlertDialog.Header>
           <AlertDialog.Body>
             <p>
-              Tem certeza que deseja excluir <strong>{name}</strong>?
-              Essa ação não pode ser desfeita.
+              Tem certeza que deseja excluir <strong>{name}</strong>? Essa ação
+              não pode ser desfeita.
             </p>
           </AlertDialog.Body>
           <AlertDialog.Footer>

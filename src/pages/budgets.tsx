@@ -1,5 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Key } from "@heroui/react";
+import type { Area } from "@/types/area";
+import type { Budget } from "@/types/budget";
+
+import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Button,
@@ -12,11 +15,10 @@ import {
 } from "@heroui/react";
 
 import { BudgetDeleteDialog, BudgetFormDrawer } from "@/components/budgets";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import DefaultLayout from "@/layouts/default";
 import { areaService } from "@/services/areaService";
 import { budgetService } from "@/services/budgetService";
-import type { Area } from "@/types/area";
-import type { Budget } from "@/types/budget";
 import {
   MONTH_OPTIONS,
   formatCurrencyFromCents,
@@ -71,14 +73,10 @@ function FilterSelect({
 
 export default function BudgetsPage() {
   const [areas, setAreas] = useState<Area[]>([]);
-  const [budgets, setBudgets] = useState<Budget[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [areaFilter, setAreaFilter] = useState<Key | null>(ALL);
   const [monthFilter, setMonthFilter] = useState<Key | null>(ALL);
   const [yearFilter, setYearFilter] = useState<Key | null>(ALL);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
@@ -116,35 +114,23 @@ export default function BudgetsPage() {
     };
   }, []);
 
-  const loadBudgets = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await budgetService.list({
+  const { data, error, isLoading, reload } = useAsyncData(
+    () =>
+      budgetService.list({
         area_id:
           areaFilter && areaFilter !== ALL ? Number(areaFilter) : undefined,
         month:
           monthFilter && monthFilter !== ALL ? Number(monthFilter) : undefined,
-        year:
-          yearFilter && yearFilter !== ALL ? Number(yearFilter) : undefined,
+        year: yearFilter && yearFilter !== ALL ? Number(yearFilter) : undefined,
         page,
         limit: PAGE_SIZE,
-      });
+      }),
+    [areaFilter, monthFilter, yearFilter, page],
+    "Não foi possível carregar os orçamentos. Tente novamente.",
+  );
 
-      setBudgets(result.data);
-      setTotalPages(Math.max(1, result.total_pages));
-    } catch {
-      setBudgets([]);
-      setError("Não foi possível carregar os orçamentos. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [areaFilter, monthFilter, yearFilter, page]);
-
-  useEffect(() => {
-    loadBudgets();
-  }, [loadBudgets]);
+  const budgets = data?.data ?? [];
+  const totalPages = Math.max(1, data?.total_pages ?? 1);
 
   function changeFilter(
     setter: (value: Key | null) => void,
@@ -173,7 +159,7 @@ export default function BudgetsPage() {
     if (budgets.length === 1 && page > 1) {
       setPage((current) => current - 1);
     } else {
-      loadBudgets();
+      reload();
     }
   }
 
@@ -252,7 +238,7 @@ export default function BudgetsPage() {
                 <Alert.Description>{error}</Alert.Description>
               </Alert.Content>
             </Alert>
-            <Button variant="secondary" onPress={loadBudgets}>
+            <Button variant="secondary" onPress={reload}>
               Tentar novamente
             </Button>
           </div>
@@ -355,7 +341,7 @@ export default function BudgetsPage() {
         budget={editingBudget}
         isOpen={formOpen}
         onOpenChange={setFormOpen}
-        onSaved={loadBudgets}
+        onSaved={reload}
       />
       <BudgetDeleteDialog
         areaName={deletingAreaName}

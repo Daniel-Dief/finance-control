@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import type { Area } from "@/types/area";
+
+import { useState } from "react";
 import {
   FieldError,
   Form,
@@ -8,9 +10,9 @@ import {
   toast,
 } from "@heroui/react";
 
-import { areaService } from "@/services/areaService";
-import type { Area } from "@/types/area";
 import { FormDrawer } from "../FormDrawer";
+
+import { areaService } from "@/services/areaService";
 import { formsAreasValidate } from "@/utils/validation";
 import { formsAreasErros } from "@/utils/mapErros";
 
@@ -28,22 +30,27 @@ export default function AreaFormDrawer({
   onSaved,
 }: AreaFormDrawerProps) {
   const isEditing = Boolean(area);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(area?.name ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const currentFormKey = isOpen ? String(area?.id ?? "new") : null;
+  const [formKey, setFormKey] = useState(currentFormKey);
 
-  useEffect(() => {
+  if (currentFormKey !== formKey) {
+    setFormKey(currentFormKey);
+
     if (isOpen) {
       setName(area?.name ?? "");
       setError(null);
     }
-  }, [isOpen, area]);
+  }
 
   async function onSubmit() {
     const validateResult = formsAreasValidate(name);
 
     if (!validateResult.isValid) {
       setError(validateResult.error);
+
       return;
     }
 
@@ -63,9 +70,10 @@ export default function AreaFormDrawer({
       onOpenChange(false);
     } catch (err) {
       const errorMessage = formsAreasErros(err);
-      
+
       if (errorMessage) {
         setError(errorMessage);
+
         return;
       }
 
@@ -79,10 +87,10 @@ export default function AreaFormDrawer({
     <FormDrawer
       isOpen={isOpen}
       isSaving={isSaving}
+      title={isEditing ? "Editar área" : "Nova área"}
       onOpenChange={onOpenChange}
       onSubmit={onSubmit}
-      title={isEditing ? "Editar área" : "Nova área"}
-    >    
+    >
       <Form
         className="flex flex-col gap-4"
         onSubmit={(event) => {
@@ -91,7 +99,6 @@ export default function AreaFormDrawer({
         }}
       >
         <TextField
-          autoFocus
           isRequired
           isInvalid={Boolean(error)}
           name="name"

@@ -1,9 +1,10 @@
+import type { Category } from "@/types/category";
+
 import { useState } from "react";
 import { toast } from "@heroui/react";
 
 import { categoryService } from "@/services/categoryService";
-import type { Category } from "@/types/category";
-import { DeleteDialog } from "@/components/DeleteDialog"; 
+import { DeleteDialog } from "@/components/DeleteDialog";
 import { deleteCategoriesValidate } from "@/utils/mapErros";
 
 interface CategoryDeleteDialogProps {
@@ -52,12 +53,12 @@ export default function CategoryDeleteDialog({
 
   return (
     <DeleteDialog
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
       handleDelete={handleDelete}
       isDeleting={isDeleting}
-      title="Excluir categoria?"
+      isOpen={isOpen}
       name={category?.name || ""}
+      title="Excluir categoria?"
+      onOpenChange={onOpenChange}
     />
   );
 }

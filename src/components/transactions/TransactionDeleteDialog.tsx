@@ -1,10 +1,12 @@
+import type { Transaction } from "@/types/transaction";
+
 import { useState } from "react";
 import { toast } from "@heroui/react";
 
-import { transactionService } from "@/services/transactionService";
-import type { Transaction } from "@/types/transaction";
-import { formatCurrencyFromCents, formatDateByString } from "@/utils/format";
 import { DeleteDialog } from "../DeleteDialog";
+
+import { transactionService } from "@/services/transactionService";
+import { formatCurrencyFromCents, formatDateByString } from "@/utils/format";
 import { deleteTransactionsValidate } from "@/utils/mapErros";
 
 interface TransactionDeleteDialogProps {
@@ -59,12 +61,12 @@ export default function TransactionDeleteDialog({
 
   return (
     <DeleteDialog
-      isOpen={isOpen}
       handleDelete={handleDelete}
-      onOpenChange={onOpenChange}
       isDeleting={isDeleting}
+      isOpen={isOpen}
       name={name}
       title="Excluir transação?"
+      onOpenChange={onOpenChange}
     />
   );
 }
