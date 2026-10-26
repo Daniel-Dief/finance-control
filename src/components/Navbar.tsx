@@ -12,8 +12,20 @@ const NAV_ITEMS = [
   { label: "Transações", href: "/transactions" },
 ];
 
+const PAGE_PREFETCH: Record<string, () => Promise<unknown>> = {
+  "/": () => import("@/pages/index"),
+  "/areas": () => import("@/pages/areas"),
+  "/categories": () => import("@/pages/categories"),
+  "/budgets": () => import("@/pages/budgets"),
+  "/transactions": () => import("@/pages/transactions"),
+};
+
 export default function Navbar() {
   const navigate = useNavigate();
+
+  function prefetchPage(href: string) {
+    PAGE_PREFETCH[href]?.();
+  }
 
   function handleLogout() {
     useAuthStore.getState().logout();
@@ -36,6 +48,8 @@ export default function Navbar() {
                 ].join(" ")
               }
               to={item.href}
+              onFocus={() => prefetchPage(item.href)}
+              onMouseEnter={() => prefetchPage(item.href)}
             >
               {item.label}
             </NavLink>

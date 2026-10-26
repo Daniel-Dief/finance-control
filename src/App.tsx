@@ -1,23 +1,33 @@
+import { lazy, Suspense } from "react";
+import { Spinner } from "@heroui/react";
 import { Route, Routes } from "react-router-dom";
 
-import CategoriesPage from "./pages/categories";
-import TransactionsPage from "./pages/transactions";
-
-import AreasPage from "@/pages/areas";
-import BudgetsPage from "@/pages/budgets";
-import IndexPage from "@/pages/index";
 import LoginPage from "@/pages/login";
+
+const AreasPage = lazy(() => import("@/pages/areas"));
+const BudgetsPage = lazy(() => import("@/pages/budgets"));
+const CategoriesPage = lazy(() => import("@/pages/categories"));
+const IndexPage = lazy(() => import("@/pages/index"));
+const TransactionsPage = lazy(() => import("@/pages/transactions"));
 
 function App() {
   return (
-    <Routes>
-      <Route element={<LoginPage />} path="/login" />
-      <Route element={<AreasPage />} path="/areas" />
-      <Route element={<CategoriesPage />} path="/categories" />
-      <Route element={<BudgetsPage />} path="/budgets" />
-      <Route element={<TransactionsPage />} path="/transactions" />
-      <Route element={<IndexPage />} path="/" />
-    </Routes>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Spinner size="lg" />
+        </div>
+      }
+    >
+      <Routes>
+        <Route element={<LoginPage />} path="/login" />
+        <Route element={<AreasPage />} path="/areas" />
+        <Route element={<CategoriesPage />} path="/categories" />
+        <Route element={<BudgetsPage />} path="/budgets" />
+        <Route element={<TransactionsPage />} path="/transactions" />
+        <Route element={<IndexPage />} path="/" />
+      </Routes>
+    </Suspense>
   );
 }
 
