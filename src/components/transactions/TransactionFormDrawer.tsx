@@ -19,7 +19,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@heroui/react";
-import { getLocalTimeZone, parseDate } from "@internationalized/date";
+import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 
 import { FormDrawer } from "../FormDrawer";
 
@@ -27,6 +27,12 @@ import { transactionService } from "@/services/transactionService";
 import { formatCurrencyFromCents, formatDateToApi } from "@/utils/format";
 import { formsTransactionsValidate } from "@/utils/validation";
 import { formsTransactionsErrors } from "@/utils/mapErros";
+
+function getDefaultDate(transaction: Transaction | null): DateValue {
+  return transaction
+    ? parseDate(transaction.date.slice(0, 10))
+    : today(getLocalTimeZone());
+}
 
 interface TransactionFormDrawerProps {
   isOpen: boolean;
@@ -60,7 +66,7 @@ export default function TransactionFormDrawer({
     transaction ? transaction.amount : null,
   );
   const [dateSelected, setDateSelected] = useState<DateValue | null>(() =>
-    transaction ? parseDate(transaction.date.slice(0, 10)) : null,
+    getDefaultDate(transaction),
   );
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -75,9 +81,7 @@ export default function TransactionFormDrawer({
       setAreaId(transaction ? String(transaction.area_id) : null);
       setCategoryId(transaction ? String(transaction.category_id) : null);
       setAmountCents(transaction ? transaction.amount : null);
-      setDateSelected(
-        transaction ? parseDate(transaction.date.slice(0, 10)) : null,
-      );
+      setDateSelected(getDefaultDate(transaction));
       setError(null);
     }
   }
