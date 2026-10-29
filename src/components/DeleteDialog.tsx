@@ -1,4 +1,4 @@
-import { AlertDialog, Button } from "@heroui/react";
+import { AlertDialog, Button } from '@heroui/react';
 
 interface DeleteDialogProps {
   isOpen: boolean;
@@ -15,7 +15,7 @@ export function DeleteDialog({
   handleDelete,
   isDeleting,
   title,
-  name,
+  name
 }: DeleteDialogProps) {
   return (
     <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -27,20 +27,16 @@ export function DeleteDialog({
           </AlertDialog.Header>
           <AlertDialog.Body>
             <p>
-              Tem certeza que deseja excluir <strong>{name}</strong>? Essa ação
-              não pode ser desfeita.
+              Tem certeza que deseja excluir <strong>{name}</strong>? Essa ação não pode ser
+              desfeita.
             </p>
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <Button variant="tertiary" onPress={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button
-              isPending={isDeleting}
-              variant="danger"
-              onPress={handleDelete}
-            >
-              {isDeleting ? "Excluindo..." : "Excluir"}
+            <Button isPending={isDeleting} variant="danger" onPress={handleDelete}>
+              {isDeleting ? 'Excluindo...' : 'Excluir'}
             </Button>
           </AlertDialog.Footer>
         </AlertDialog.Dialog>

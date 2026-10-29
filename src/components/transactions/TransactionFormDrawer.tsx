@@ -1,9 +1,9 @@
-import type { DateValue, Key } from "@heroui/react";
-import type { Area } from "@/types/area";
-import type { Category } from "@/types/category";
-import type { Transaction, TransactionType } from "@/types/transaction";
+import type { DateValue, Key } from '@heroui/react';
+import type { Area } from '@/types/area';
+import type { Category } from '@/types/category';
+import type { Transaction, TransactionType } from '@/types/transaction';
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 import {
   Alert,
   Calendar,
@@ -17,21 +17,19 @@ import {
   TextField,
   toast,
   ToggleButton,
-  ToggleButtonGroup,
-} from "@heroui/react";
-import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
+  ToggleButtonGroup
+} from '@heroui/react';
+import { getLocalTimeZone, parseDate, today } from '@internationalized/date';
 
-import { FormDrawer } from "../FormDrawer";
+import { FormDrawer } from '../FormDrawer';
 
-import { transactionService } from "@/services/transactionService";
-import { formatCurrencyFromCents, formatDateToApi } from "@/utils/format";
-import { formsTransactionsValidate } from "@/utils/validation";
-import { formsTransactionsErrors } from "@/utils/mapErros";
+import { transactionService } from '@/services/transactionService';
+import { formatCurrencyFromCents, formatDateToApi } from '@/utils/format';
+import { formsTransactionsValidate } from '@/utils/validation';
+import { formsTransactionsErrors } from '@/utils/mapErros';
 
 function getDefaultDate(transaction: Transaction | null): DateValue {
-  return transaction
-    ? parseDate(transaction.date.slice(0, 10))
-    : today(getLocalTimeZone());
+  return transaction ? parseDate(transaction.date.slice(0, 10)) : today(getLocalTimeZone());
 }
 
 interface TransactionFormDrawerProps {
@@ -49,35 +47,33 @@ export default function TransactionFormDrawer({
   transaction,
   areas,
   categories,
-  onSaved,
+  onSaved
 }: TransactionFormDrawerProps) {
   const isEditing = Boolean(transaction);
 
-  const [type, setType] = useState<TransactionType>(
-    transaction?.type ?? "expense",
-  );
+  const [type, setType] = useState<TransactionType>(transaction?.type ?? 'expense');
   const [areaId, setAreaId] = useState<Key | null>(
-    transaction ? String(transaction.area_id) : null,
+    transaction ? String(transaction.area_id) : null
   );
   const [categoryId, setCategoryId] = useState<Key | null>(
-    transaction ? String(transaction.category_id) : null,
+    transaction ? String(transaction.category_id) : null
   );
   const [amountCents, setAmountCents] = useState<number | null>(
-    transaction ? transaction.amount : null,
+    transaction ? transaction.amount : null
   );
   const [dateSelected, setDateSelected] = useState<DateValue | null>(() =>
-    getDefaultDate(transaction),
+    getDefaultDate(transaction)
   );
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const currentFormKey = isOpen ? String(transaction?.id ?? "new") : null;
+  const currentFormKey = isOpen ? String(transaction?.id ?? 'new') : null;
   const [formKey, setFormKey] = useState(currentFormKey);
 
   if (currentFormKey !== formKey) {
     setFormKey(currentFormKey);
 
     if (isOpen) {
-      setType(transaction?.type ?? "expense");
+      setType(transaction?.type ?? 'expense');
       setAreaId(transaction ? String(transaction.area_id) : null);
       setCategoryId(transaction ? String(transaction.category_id) : null);
       setAmountCents(transaction ? transaction.amount : null);
@@ -97,7 +93,7 @@ export default function TransactionFormDrawer({
       areaId,
       categoryId,
       date: dateSelected,
-      amountCents,
+      amountCents
     });
 
     if (!validated.isValid) {
@@ -111,9 +107,7 @@ export default function TransactionFormDrawer({
       amount: Number(amountCents),
       area_id: Number(areaId),
       category_id: Number(categoryId),
-      date: formatDateToApi(
-        (dateSelected as DateValue).toDate(getLocalTimeZone()),
-      ),
+      date: formatDateToApi((dateSelected as DateValue).toDate(getLocalTimeZone()))
     };
 
     setError(null);
@@ -122,10 +116,10 @@ export default function TransactionFormDrawer({
     try {
       if (isEditing && transaction) {
         await transactionService.update(transaction.id, payload);
-        toast.success("Transação atualizada com sucesso.");
+        toast.success('Transação atualizada com sucesso.');
       } else {
         await transactionService.create(payload);
-        toast.success("Transação criada com sucesso.");
+        toast.success('Transação criada com sucesso.');
       }
 
       onSaved();
@@ -139,14 +133,14 @@ export default function TransactionFormDrawer({
         return;
       }
 
-      toast.danger("Não foi possível salvar a transação. Tente novamente.");
+      toast.danger('Não foi possível salvar a transação. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
   }
 
   function handleAmountChange(next: string) {
-    const digits = next.replace(/\D/g, "");
+    const digits = next.replace(/\D/g, '');
 
     if (!digits) {
       setAmountCents(null);
@@ -161,14 +155,13 @@ export default function TransactionFormDrawer({
     }
   }
 
-  const amountText =
-    amountCents === null ? "" : formatCurrencyFromCents(amountCents);
+  const amountText = amountCents === null ? '' : formatCurrencyFromCents(amountCents);
 
   return (
     <FormDrawer
       isOpen={isOpen}
       isSaving={isSaving}
-      title={isEditing ? "Editar transação" : "Nova transação"}
+      title={isEditing ? 'Editar transação' : 'Nova transação'}
       onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >
@@ -185,10 +178,8 @@ export default function TransactionFormDrawer({
             <Alert.Content>
               <Alert.Title>Cadastros necessários</Alert.Title>
               <Alert.Description>
-                {areas.length === 0
-                  ? "Cadastre uma área"
-                  : "Cadastre uma categoria"}{" "}
-                antes de criar uma transação.
+                {areas.length === 0 ? 'Cadastre uma área' : 'Cadastre uma categoria'} antes de criar
+                uma transação.
               </Alert.Description>
             </Alert.Content>
           </Alert>
@@ -243,11 +234,7 @@ export default function TransactionFormDrawer({
           <Select.Popover>
             <ListBox>
               {areas.map((area) => (
-                <ListBox.Item
-                  key={area.id}
-                  id={String(area.id)}
-                  textValue={area.name}
-                >
+                <ListBox.Item key={area.id} id={String(area.id)} textValue={area.name}>
                   {area.name}
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
@@ -273,11 +260,7 @@ export default function TransactionFormDrawer({
           <Select.Popover>
             <ListBox>
               {categories.map((category) => (
-                <ListBox.Item
-                  key={category.id}
-                  id={String(category.id)}
-                  textValue={category.name}
-                >
+                <ListBox.Item key={category.id} id={String(category.id)} textValue={category.name}>
                   {category.name}
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
@@ -318,9 +301,7 @@ export default function TransactionFormDrawer({
                 <Calendar.GridHeader>
                   {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
                 </Calendar.GridHeader>
-                <Calendar.GridBody>
-                  {(date) => <Calendar.Cell date={date} />}
-                </Calendar.GridBody>
+                <Calendar.GridBody>{(date) => <Calendar.Cell date={date} />}</Calendar.GridBody>
               </Calendar.Grid>
               <Calendar.YearPickerGrid>
                 <Calendar.YearPickerGridBody>
@@ -331,18 +312,9 @@ export default function TransactionFormDrawer({
           </DatePicker.Popover>
         </DatePicker>
 
-        <TextField
-          isRequired
-          name="amount"
-          value={amountText}
-          onChange={handleAmountChange}
-        >
+        <TextField isRequired name="amount" value={amountText} onChange={handleAmountChange}>
           <Label>Valor</Label>
-          <Input
-            inputMode="numeric"
-            placeholder="R$ 0,00"
-            variant="secondary"
-          />
+          <Input inputMode="numeric" placeholder="R$ 0,00" variant="secondary" />
         </TextField>
       </Form>
     </FormDrawer>

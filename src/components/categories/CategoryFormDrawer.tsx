@@ -1,19 +1,12 @@
-import type { Category } from "@/types/category";
+import type { Category } from '@/types/category';
 
-import { useState } from "react";
-import {
-  FieldError,
-  Form,
-  Input,
-  Label,
-  TextField,
-  toast,
-} from "@heroui/react";
+import { useState } from 'react';
+import { FieldError, Form, Input, Label, TextField, toast } from '@heroui/react';
 
-import { formsCategoriesErrors } from "@/utils/mapErros";
-import { FormDrawer } from "@/components/FormDrawer";
-import { formsCategoriesValidate } from "@/utils/validation";
-import { categoryService } from "@/services/categoryService";
+import { formsCategoriesErrors } from '@/utils/mapErros';
+import { FormDrawer } from '@/components/FormDrawer';
+import { formsCategoriesValidate } from '@/utils/validation';
+import { categoryService } from '@/services/categoryService';
 
 interface CategoryFormDrawerProps {
   isOpen: boolean;
@@ -26,20 +19,20 @@ export default function CategoryFormDrawer({
   isOpen,
   onOpenChange,
   category,
-  onSaved,
+  onSaved
 }: CategoryFormDrawerProps) {
   const isEditing = Boolean(category);
-  const [name, setName] = useState(category?.name ?? "");
+  const [name, setName] = useState(category?.name ?? '');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const currentFormKey = isOpen ? String(category?.id ?? "new") : null;
+  const currentFormKey = isOpen ? String(category?.id ?? 'new') : null;
   const [formKey, setFormKey] = useState(currentFormKey);
 
   if (currentFormKey !== formKey) {
     setFormKey(currentFormKey);
 
     if (isOpen) {
-      setName(category?.name ?? "");
+      setName(category?.name ?? '');
       setError(null);
     }
   }
@@ -59,10 +52,10 @@ export default function CategoryFormDrawer({
     try {
       if (isEditing && category) {
         await categoryService.update(category.id, { name: name.trim() });
-        toast.success("Categoria atualizada com sucesso.");
+        toast.success('Categoria atualizada com sucesso.');
       } else {
         await categoryService.create({ name: name.trim() });
-        toast.success("Categoria criada com sucesso.");
+        toast.success('Categoria criada com sucesso.');
       }
 
       onSaved();
@@ -76,7 +69,7 @@ export default function CategoryFormDrawer({
         return;
       }
 
-      toast.danger("Não foi possível salvar a categoria. Tente novamente.");
+      toast.danger('Não foi possível salvar a categoria. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
@@ -86,7 +79,7 @@ export default function CategoryFormDrawer({
     <FormDrawer
       isOpen={isOpen}
       isSaving={isSaving}
-      title={isEditing ? "Editar categoria" : "Nova categoria"}
+      title={isEditing ? 'Editar categoria' : 'Nova categoria'}
       onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >

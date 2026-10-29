@@ -1,20 +1,13 @@
-import type { Area } from "@/types/area";
+import type { Area } from '@/types/area';
 
-import { useState } from "react";
-import {
-  FieldError,
-  Form,
-  Input,
-  Label,
-  TextField,
-  toast,
-} from "@heroui/react";
+import { useState } from 'react';
+import { FieldError, Form, Input, Label, TextField, toast } from '@heroui/react';
 
-import { FormDrawer } from "../FormDrawer";
+import { FormDrawer } from '../FormDrawer';
 
-import { areaService } from "@/services/areaService";
-import { formsAreasValidate } from "@/utils/validation";
-import { formsAreasErros } from "@/utils/mapErros";
+import { areaService } from '@/services/areaService';
+import { formsAreasValidate } from '@/utils/validation';
+import { formsAreasErros } from '@/utils/mapErros';
 
 interface AreaFormDrawerProps {
   isOpen: boolean;
@@ -27,20 +20,20 @@ export default function AreaFormDrawer({
   isOpen,
   onOpenChange,
   area,
-  onSaved,
+  onSaved
 }: AreaFormDrawerProps) {
   const isEditing = Boolean(area);
-  const [name, setName] = useState(area?.name ?? "");
+  const [name, setName] = useState(area?.name ?? '');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const currentFormKey = isOpen ? String(area?.id ?? "new") : null;
+  const currentFormKey = isOpen ? String(area?.id ?? 'new') : null;
   const [formKey, setFormKey] = useState(currentFormKey);
 
   if (currentFormKey !== formKey) {
     setFormKey(currentFormKey);
 
     if (isOpen) {
-      setName(area?.name ?? "");
+      setName(area?.name ?? '');
       setError(null);
     }
   }
@@ -60,10 +53,10 @@ export default function AreaFormDrawer({
     try {
       if (isEditing && area) {
         await areaService.update(area.id, { name: name.trim() });
-        toast.success("Área atualizada com sucesso.");
+        toast.success('Área atualizada com sucesso.');
       } else {
         await areaService.create({ name: name.trim() });
-        toast.success("Área criada com sucesso.");
+        toast.success('Área criada com sucesso.');
       }
 
       onSaved();
@@ -77,7 +70,7 @@ export default function AreaFormDrawer({
         return;
       }
 
-      toast.danger("Não foi possível salvar a área. Tente novamente.");
+      toast.danger('Não foi possível salvar a área. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
@@ -87,7 +80,7 @@ export default function AreaFormDrawer({
     <FormDrawer
       isOpen={isOpen}
       isSaving={isSaving}
-      title={isEditing ? "Editar área" : "Nova área"}
+      title={isEditing ? 'Editar área' : 'Nova área'}
       onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >

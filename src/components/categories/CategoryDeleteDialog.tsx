@@ -1,11 +1,11 @@
-import type { Category } from "@/types/category";
+import type { Category } from '@/types/category';
 
-import { useState } from "react";
-import { toast } from "@heroui/react";
+import { useState } from 'react';
+import { toast } from '@heroui/react';
 
-import { categoryService } from "@/services/categoryService";
-import { DeleteDialog } from "@/components/DeleteDialog";
-import { deleteCategoriesValidate } from "@/utils/mapErros";
+import { categoryService } from '@/services/categoryService';
+import { DeleteDialog } from '@/components/DeleteDialog';
+import { deleteCategoriesValidate } from '@/utils/mapErros';
 
 interface CategoryDeleteDialogProps {
   isOpen: boolean;
@@ -18,7 +18,7 @@ export default function CategoryDeleteDialog({
   isOpen,
   onOpenChange,
   category,
-  onDeleted,
+  onDeleted
 }: CategoryDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -31,7 +31,7 @@ export default function CategoryDeleteDialog({
 
     try {
       await categoryService.remove(category.id);
-      toast.success("Categoria excluída com sucesso.");
+      toast.success('Categoria excluída com sucesso.');
       onDeleted(category);
       onOpenChange(false);
     } catch (err) {
@@ -45,7 +45,7 @@ export default function CategoryDeleteDialog({
         return;
       }
 
-      toast.danger("Não foi possível excluir a categoria. Tente novamente.");
+      toast.danger('Não foi possível excluir a categoria. Tente novamente.');
     } finally {
       setIsDeleting(false);
     }
@@ -56,7 +56,7 @@ export default function CategoryDeleteDialog({
       handleDelete={handleDelete}
       isDeleting={isDeleting}
       isOpen={isOpen}
-      name={category?.name || ""}
+      name={category?.name || ''}
       title="Excluir categoria?"
       onOpenChange={onOpenChange}
     />

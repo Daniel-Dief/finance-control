@@ -1,24 +1,24 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { Button } from "@heroui/react";
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Button } from '@heroui/react';
 
-import { ThemeSwitch } from "@/components/theme-switch";
-import { useAuthStore } from "@/stores/authStore";
+import { ThemeSwitch } from '@/components/theme-switch';
+import { useAuthStore } from '@/stores/authStore';
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Áreas", href: "/areas" },
-  { label: "Categorias", href: "/categories" },
-  { label: "Orçamentos", href: "/budgets" },
-  { label: "Transações", href: "/transactions" },
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Áreas', href: '/areas' },
+  { label: 'Categorias', href: '/categories' },
+  { label: 'Orçamentos', href: '/budgets' },
+  { label: 'Transações', href: '/transactions' }
 ];
 
 const PAGE_PREFETCH: Record<string, () => Promise<unknown>> = {
-  "/": () => import("@/pages/transactions"),
-  "/dashboard": () => import("@/pages/dashboard"),
-  "/areas": () => import("@/pages/areas"),
-  "/categories": () => import("@/pages/categories"),
-  "/budgets": () => import("@/pages/budgets"),
-  "/transactions": () => import("@/pages/transactions"),
+  '/': () => import('@/pages/transactions'),
+  '/dashboard': () => import('@/pages/dashboard'),
+  '/areas': () => import('@/pages/areas'),
+  '/categories': () => import('@/pages/categories'),
+  '/budgets': () => import('@/pages/budgets'),
+  '/transactions': () => import('@/pages/transactions')
 };
 
 export default function Navbar() {
@@ -30,7 +30,7 @@ export default function Navbar() {
 
   function handleLogout() {
     useAuthStore.getState().logout();
-    navigate("/login", { replace: true });
+    navigate('/login', { replace: true });
   }
 
   return (
@@ -42,11 +42,9 @@ export default function Navbar() {
               key={item.href}
               className={({ isActive }) =>
                 [
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-default text-foreground"
-                    : "text-muted hover:text-foreground",
-                ].join(" ")
+                  'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isActive ? 'bg-default text-foreground' : 'text-muted hover:text-foreground'
+                ].join(' ')
               }
               to={item.href}
               onFocus={() => prefetchPage(item.href)}

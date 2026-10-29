@@ -1,13 +1,13 @@
-import type { Transaction } from "@/types/transaction";
+import type { Transaction } from '@/types/transaction';
 
-import { useState } from "react";
-import { toast } from "@heroui/react";
+import { useState } from 'react';
+import { toast } from '@heroui/react';
 
-import { DeleteDialog } from "../DeleteDialog";
+import { DeleteDialog } from '../DeleteDialog';
 
-import { transactionService } from "@/services/transactionService";
-import { formatCurrencyFromCents, formatDateByString } from "@/utils/format";
-import { deleteTransactionsValidate } from "@/utils/mapErros";
+import { transactionService } from '@/services/transactionService';
+import { formatCurrencyFromCents, formatDateByString } from '@/utils/format';
+import { deleteTransactionsValidate } from '@/utils/mapErros';
 
 interface TransactionDeleteDialogProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ export default function TransactionDeleteDialog({
   isOpen,
   onOpenChange,
   transaction,
-  onDeleted,
+  onDeleted
 }: TransactionDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -33,7 +33,7 @@ export default function TransactionDeleteDialog({
 
     try {
       await transactionService.remove(transaction.id);
-      toast.success("Transação excluída com sucesso.");
+      toast.success('Transação excluída com sucesso.');
       onDeleted(transaction);
       onOpenChange(false);
     } catch (err) {
@@ -47,17 +47,15 @@ export default function TransactionDeleteDialog({
         return;
       }
 
-      toast.danger("Não foi possível excluir a transação. Tente novamente.");
+      toast.danger('Não foi possível excluir a transação. Tente novamente.');
     } finally {
       setIsDeleting(false);
     }
   }
 
   const name = transaction
-    ? `${formatDateByString(transaction.date)} - ${formatCurrencyFromCents(
-        transaction.amount,
-      )}`
-    : "";
+    ? `${formatDateByString(transaction.date)} - ${formatCurrencyFromCents(transaction.amount)}`
+    : '';
 
   return (
     <DeleteDialog

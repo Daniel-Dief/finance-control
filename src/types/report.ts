@@ -1,4 +1,4 @@
-export type ReportTransactionType = "income" | "expense";
+export type ReportTransactionType = 'income' | 'expense';
 
 export interface ReportKPIs {
   income: number;

@@ -1,19 +1,19 @@
-import type { LoginResponse } from "@/types/auth";
+import type { LoginResponse } from '@/types/auth';
 
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore } from '@/stores/authStore';
 
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:1323";
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:1323';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: { 'Content-Type': 'application/json' }
 });
 
 const refreshClient = axios.create({
   baseURL: API_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: { 'Content-Type': 'application/json' }
 });
 
 interface RetryQueueItem {
@@ -45,9 +45,9 @@ export async function refreshToken(): Promise<string | null> {
   }
 
   try {
-    const { data } = await refreshClient.post<LoginResponse>("/auth/login", {
+    const { data } = await refreshClient.post<LoginResponse>('/auth/login', {
       login: user.login,
-      password,
+      password
     });
 
     useAuthStore.getState().login(data.token, data.user, password);
@@ -132,5 +132,5 @@ apiClient.interceptors.response.use(
     }
 
     return retried;
-  },
+  }
 );

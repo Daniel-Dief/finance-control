@@ -1,9 +1,9 @@
-import type { ReportTransactionType } from "@/types/report";
+import type { ReportTransactionType } from '@/types/report';
 
-import { Label, ListBox, Select, Spinner } from "@heroui/react";
-import { LineChart as MUILineChart } from "@mui/x-charts/LineChart";
+import { Label, ListBox, Select, Spinner } from '@heroui/react';
+import { LineChart as MUILineChart } from '@mui/x-charts/LineChart';
 
-import { formatChartAmount } from "@/utils/format";
+import { formatChartAmount } from '@/utils/format';
 
 export interface LineChartPoint {
   label: string;
@@ -21,29 +21,29 @@ export default function LineChart({
   chartTextColor,
   chartSx,
   onTypeChange,
-  onGranularityChange,
+  onGranularityChange
 }: {
   points: LineChartPoint[];
   type: ReportTransactionType;
-  granularity: "daily" | "weekly";
+  granularity: 'daily' | 'weekly';
   historyMonths: number;
   isLoading: boolean;
   error: string | null;
   chartTextColor: string;
   chartSx: Record<string, unknown>;
   onTypeChange: (value: ReportTransactionType) => void;
-  onGranularityChange: (value: "daily" | "weekly") => void;
+  onGranularityChange: (value: 'daily' | 'weekly') => void;
 }) {
   const colors =
-    type === "expense"
-      ? { primary: "#ef4444", secondary: "#fca5a5" }
-      : { primary: "#22c55e", secondary: "#86efac" };
+    type === 'expense'
+      ? { primary: '#ef4444', secondary: '#fca5a5' }
+      : { primary: '#22c55e', secondary: '#86efac' };
 
   const select = (
     label: string,
     value: string,
     options: { value: string; label: string }[],
-    onChange: (value: string) => void,
+    onChange: (value: string) => void
   ) => (
     <Select
       className="min-w-36"
@@ -60,11 +60,7 @@ export default function LineChart({
       <Select.Popover>
         <ListBox>
           {options.map((option) => (
-            <ListBox.Item
-              key={option.value}
-              id={option.value}
-              textValue={option.label}
-            >
+            <ListBox.Item key={option.value} id={option.value} textValue={option.label}>
               {option.label}
               <ListBox.ItemIndicator />
             </ListBox.Item>
@@ -80,28 +76,27 @@ export default function LineChart({
         <div>
           <h2 className="text-lg font-semibold">Movimentação no mês</h2>
           <p className="text-sm text-muted">
-            A linha tracejada representa a mediana dos últimos {historyMonths}{" "}
-            meses.
+            A linha tracejada representa a mediana dos últimos {historyMonths} meses.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           {select(
-            "Tipo",
+            'Tipo',
             type,
             [
-              { value: "expense", label: "Saídas" },
-              { value: "income", label: "Entradas" },
+              { value: 'expense', label: 'Saídas' },
+              { value: 'income', label: 'Entradas' }
             ],
-            (value) => onTypeChange(value as ReportTransactionType),
+            (value) => onTypeChange(value as ReportTransactionType)
           )}
           {select(
-            "Agrupamento",
+            'Agrupamento',
             granularity,
             [
-              { value: "daily", label: "Diário" },
-              { value: "weekly", label: "Semanal" },
+              { value: 'daily', label: 'Diário' },
+              { value: 'weekly', label: 'Semanal' }
             ],
-            (value) => onGranularityChange(value as "daily" | "weekly"),
+            (value) => onGranularityChange(value as 'daily' | 'weekly')
           )}
         </div>
       </div>
@@ -111,9 +106,7 @@ export default function LineChart({
             <Spinner />
           </div>
         ) : error ? (
-          <p className="flex h-full items-center justify-center text-sm text-danger">
-            {error}
-          </p>
+          <p className="flex h-full items-center justify-center text-sm text-danger">{error}</p>
         ) : points.length > 0 ? (
           <MUILineChart
             grid={{ horizontal: true }}
@@ -121,42 +114,30 @@ export default function LineChart({
             series={[
               {
                 data: points.map((point) => point.value),
-                label: "Movimentação",
+                label: 'Movimentação',
                 color: colors.primary,
-                valueFormatter: (value) => formatChartAmount(value),
+                valueFormatter: (value) => formatChartAmount(value)
               },
               {
                 data: points.map((point) => point.median),
-                label: "Mediana",
+                label: 'Mediana',
                 color: colors.secondary,
-                curve: "linear",
-                valueFormatter: (value) => formatChartAmount(value),
-              },
+                curve: 'linear',
+                valueFormatter: (value) => formatChartAmount(value)
+              }
             ]}
             slotProps={{
-              axisLabel: {
-                style: { fill: chartTextColor, color: chartTextColor },
-              },
+              axisLabel: { style: { fill: chartTextColor, color: chartTextColor } },
               axisTick: { stroke: chartTextColor },
-              axisTickLabel: {
-                style: { fill: chartTextColor, color: chartTextColor },
-              },
+              axisTickLabel: { style: { fill: chartTextColor, color: chartTextColor } },
               legend: {
-                sx: {
-                  color: chartTextColor,
-                  "& .MuiChartsLegend-label": { color: chartTextColor },
-                },
-              },
+                sx: { color: chartTextColor, '& .MuiChartsLegend-label': { color: chartTextColor } }
+              }
             }}
             sx={chartSx}
-            xAxis={[
-              { scaleType: "point", data: points.map((point) => point.label) },
-            ]}
+            xAxis={[{ scaleType: 'point', data: points.map((point) => point.label) }]}
             yAxis={[
-              {
-                tickMinStep: 5000,
-                valueFormatter: (value: number) => formatChartAmount(value),
-              },
+              { tickMinStep: 5000, valueFormatter: (value: number) => formatChartAmount(value) }
             ]}
           />
         ) : (

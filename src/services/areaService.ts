@@ -1,6 +1,6 @@
-import type { Area, AreaPayload, PaginatedResult } from "@/types/area";
+import type { Area, AreaPayload, PaginatedResult } from '@/types/area';
 
-import { apiClient } from "@/services/apiClient";
+import { apiClient } from '@/services/apiClient';
 
 export interface AreaListParams {
   name?: string;
@@ -16,16 +16,13 @@ function emptyPage(params: AreaListParams): PaginatedResult<Area> {
     page: params.page ?? 1,
     limit: params.limit ?? DEFAULT_LIMIT,
     total: 0,
-    total_pages: 0,
+    total_pages: 0
   };
 }
 
 export const areaService = {
   async list(params: AreaListParams = {}): Promise<PaginatedResult<Area>> {
-    const { data } = await apiClient.get<PaginatedResult<Area> | null>(
-      "/areas/list",
-      { params },
-    );
+    const { data } = await apiClient.get<PaginatedResult<Area> | null>('/areas/list', { params });
 
     // A API responde 204 (corpo vazio) quando não há áreas cadastradas.
     if (!data || !Array.isArray(data.data)) {
@@ -40,7 +37,7 @@ export const areaService = {
     return data;
   },
   async create(payload: AreaPayload): Promise<Area> {
-    const { data } = await apiClient.post<Area>("/areas/create", payload);
+    const { data } = await apiClient.post<Area>('/areas/create', payload);
 
     return data;
   },
@@ -51,5 +48,5 @@ export const areaService = {
   },
   async remove(id: number): Promise<void> {
     await apiClient.delete(`/areas/${id}`);
-  },
+  }
 };

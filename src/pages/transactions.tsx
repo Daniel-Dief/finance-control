@@ -1,9 +1,9 @@
-import type { Key } from "@heroui/react";
-import type { Area } from "@/types/area";
-import type { Category } from "@/types/category";
-import type { Transaction } from "@/types/transaction";
+import type { Key } from '@heroui/react';
+import type { Area } from '@/types/area';
+import type { Category } from '@/types/category';
+import type { Transaction } from '@/types/transaction';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Button,
@@ -13,29 +13,26 @@ import {
   Pagination,
   Select,
   Spinner,
-  Table,
-} from "@heroui/react";
+  Table
+} from '@heroui/react';
 
-import {
-  TransactionDeleteDialog,
-  TransactionFormDrawer,
-} from "@/components/transactions";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import DefaultLayout from "@/layouts/default";
-import { areaService } from "@/services/areaService";
-import { categoryService } from "@/services/categoryService";
-import { transactionService } from "@/services/transactionService";
+import { TransactionDeleteDialog, TransactionFormDrawer } from '@/components/transactions';
+import { useAsyncData } from '@/hooks/useAsyncData';
+import DefaultLayout from '@/layouts/default';
+import { areaService } from '@/services/areaService';
+import { categoryService } from '@/services/categoryService';
+import { transactionService } from '@/services/transactionService';
 import {
   MONTH_OPTIONS,
   formatCurrencyFromCents,
   formatDateByString,
   getCurrentMonth,
-  getMonthRange,
-} from "@/utils/format";
-import { getPageItems } from "@/utils/pagination";
+  getMonthRange
+} from '@/utils/format';
+import { getPageItems } from '@/utils/pagination';
 
 const PAGE_SIZE = 10;
-const ALL = "all";
+const ALL = 'all';
 
 interface FilterOption {
   value: string;
@@ -46,7 +43,7 @@ function FilterSelect({
   label,
   options,
   value,
-  onChange,
+  onChange
 }: {
   label: string;
   options: FilterOption[];
@@ -63,11 +60,7 @@ function FilterSelect({
       <Select.Popover>
         <ListBox>
           {options.map((option) => (
-            <ListBox.Item
-              key={option.value}
-              id={option.value}
-              textValue={option.label}
-            >
+            <ListBox.Item key={option.value} id={option.value} textValue={option.label}>
               {option.label}
               <ListBox.ItemIndicator />
             </ListBox.Item>
@@ -87,11 +80,9 @@ export default function TransactionsPage() {
   const [monthFilter, setMonthFilter] = useState<Key | null>(getCurrentMonth());
 
   const [formOpen, setFormOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] =
-    useState<Transaction | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletingTransaction, setDeletingTransaction] =
-    useState<Transaction | null>(null);
+  const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null);
 
   const areaNames = useMemo(() => {
     const map = new Map<number, string>();
@@ -146,34 +137,25 @@ export default function TransactionsPage() {
   const { data, error, isLoading, reload } = useAsyncData(
     () => {
       const range =
-        monthFilter && monthFilter !== ALL
-          ? getMonthRange(Number(monthFilter))
-          : undefined;
+        monthFilter && monthFilter !== ALL ? getMonthRange(Number(monthFilter)) : undefined;
 
       return transactionService.list({
-        area_id:
-          areaFilter && areaFilter !== ALL ? Number(areaFilter) : undefined,
-        category_id:
-          categoryFilter && categoryFilter !== ALL
-            ? Number(categoryFilter)
-            : undefined,
+        area_id: areaFilter && areaFilter !== ALL ? Number(areaFilter) : undefined,
+        category_id: categoryFilter && categoryFilter !== ALL ? Number(categoryFilter) : undefined,
         from: range?.from,
         to: range?.to,
         page,
-        limit: PAGE_SIZE,
+        limit: PAGE_SIZE
       });
     },
     [areaFilter, categoryFilter, monthFilter, page],
-    "Não foi possível carregar as transações. Tente novamente.",
+    'Não foi possível carregar as transações. Tente novamente.'
   );
 
   const transactions = data?.data ?? [];
   const totalPages = Math.max(1, data?.total_pages ?? 1);
 
-  function changeFilter(
-    setter: (value: Key | null) => void,
-    value: Key | null,
-  ) {
+  function changeFilter(setter: (value: Key | null) => void, value: Key | null) {
     setter(value);
     setPage(1);
   }
@@ -202,22 +184,16 @@ export default function TransactionsPage() {
   }
 
   const areaOptions: FilterOption[] = [
-    { label: "Todas as áreas", value: ALL },
-    ...areas.map((area) => ({ label: area.name, value: String(area.id) })),
+    { label: 'Todas as áreas', value: ALL },
+    ...areas.map((area) => ({ label: area.name, value: String(area.id) }))
   ];
   const categoryOptions: FilterOption[] = [
-    { label: "Todas as categorias", value: ALL },
-    ...categories.map((category) => ({
-      label: category.name,
-      value: String(category.id),
-    })),
+    { label: 'Todas as categorias', value: ALL },
+    ...categories.map((category) => ({ label: category.name, value: String(category.id) }))
   ];
   const monthOptions: FilterOption[] = [
-    { label: "Todos os meses", value: ALL },
-    ...MONTH_OPTIONS.map((option) => ({
-      label: option.label,
-      value: String(option.value),
-    })),
+    { label: 'Todos os meses', value: ALL },
+    ...MONTH_OPTIONS.map((option) => ({ label: option.label, value: String(option.value) }))
   ];
 
   const pages = getPageItems(page, totalPages);
@@ -227,12 +203,8 @@ export default function TransactionsPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Transações
-            </h1>
-            <p className="text-muted text-sm">
-              Gerencie as transações financeiras da sua conta.
-            </p>
+            <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
+            <p className="text-muted text-sm">Gerencie as transações financeiras da sua conta.</p>
           </div>
           <Button variant="primary" onPress={openCreate}>
             Nova transação
@@ -298,29 +270,19 @@ export default function TransactionsPage() {
                 >
                   {transactions.map((transaction) => (
                     <Table.Row key={transaction.id}>
-                      <Table.Cell>
-                        {formatDateByString(transaction.date)}
-                      </Table.Cell>
+                      <Table.Cell>{formatDateByString(transaction.date)}</Table.Cell>
                       <Table.Cell>
                         <Chip
-                          color={
-                            transaction.type === "income" ? "success" : "danger"
-                          }
+                          color={transaction.type === 'income' ? 'success' : 'danger'}
                           size="sm"
                           variant="soft"
                         >
-                          {transaction.type === "income"
-                            ? "Receita"
-                            : "Despesa"}
+                          {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                         </Chip>
                       </Table.Cell>
                       <Table.Cell>{areaLabel(transaction.area_id)}</Table.Cell>
-                      <Table.Cell>
-                        {categoryLabel(transaction.category_id)}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {formatCurrencyFromCents(transaction.amount)}
-                      </Table.Cell>
+                      <Table.Cell>{categoryLabel(transaction.category_id)}</Table.Cell>
+                      <Table.Cell>{formatCurrencyFromCents(transaction.amount)}</Table.Cell>
                       <Table.Cell>
                         <div className="flex gap-2">
                           <Button
@@ -359,27 +321,22 @@ export default function TransactionsPage() {
                 </Pagination.Previous>
               </Pagination.Item>
               {pages.map((item, index) =>
-                item === "ellipsis" ? (
+                item === 'ellipsis' ? (
                   <Pagination.Item key={`ellipsis-${index}`}>
                     <Pagination.Ellipsis />
                   </Pagination.Item>
                 ) : (
                   <Pagination.Item key={item}>
-                    <Pagination.Link
-                      isActive={item === page}
-                      onPress={() => setPage(item)}
-                    >
+                    <Pagination.Link isActive={item === page} onPress={() => setPage(item)}>
                       {item}
                     </Pagination.Link>
                   </Pagination.Item>
-                ),
+                )
               )}
               <Pagination.Item>
                 <Pagination.Next
                   isDisabled={page === totalPages}
-                  onPress={() =>
-                    setPage((current) => Math.min(totalPages, current + 1))
-                  }
+                  onPress={() => setPage((current) => Math.min(totalPages, current + 1))}
                 >
                   <Pagination.NextIcon />
                 </Pagination.Next>

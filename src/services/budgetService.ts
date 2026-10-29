@@ -1,11 +1,6 @@
-import type {
-  Budget,
-  BudgetPayload,
-  BudgetUpdatePayload,
-  PaginatedResult,
-} from "@/types/budget";
+import type { Budget, BudgetPayload, BudgetUpdatePayload, PaginatedResult } from '@/types/budget';
 
-import { apiClient } from "@/services/apiClient";
+import { apiClient } from '@/services/apiClient';
 
 export interface BudgetListParams {
   year?: number;
@@ -23,16 +18,15 @@ function emptyPage(params: BudgetListParams): PaginatedResult<Budget> {
     page: params.page ?? 1,
     limit: params.limit ?? DEFAULT_LIMIT,
     total: 0,
-    total_pages: 0,
+    total_pages: 0
   };
 }
 
 export const budgetService = {
   async list(params: BudgetListParams = {}): Promise<PaginatedResult<Budget>> {
-    const { data } = await apiClient.get<PaginatedResult<Budget> | null>(
-      "/budgets/list",
-      { params },
-    );
+    const { data } = await apiClient.get<PaginatedResult<Budget> | null>('/budgets/list', {
+      params
+    });
 
     // A API responde 204 (corpo vazio) quando não há orçamentos cadastrados.
     if (!data || !Array.isArray(data.data)) {
@@ -47,7 +41,7 @@ export const budgetService = {
     return data;
   },
   async create(payload: BudgetPayload): Promise<Budget> {
-    const { data } = await apiClient.post<Budget>("/budgets/create", payload);
+    const { data } = await apiClient.post<Budget>('/budgets/create', payload);
 
     return data;
   },
@@ -58,5 +52,5 @@ export const budgetService = {
   },
   async remove(id: number): Promise<void> {
     await apiClient.delete(`/budgets/${id}`);
-  },
+  }
 };

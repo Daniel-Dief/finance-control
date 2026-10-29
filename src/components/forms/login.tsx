@@ -1,20 +1,11 @@
-import type { Dispatch, FormEvent, SetStateAction } from "react";
+import type { Dispatch, FormEvent, SetStateAction } from 'react';
 
-import { useState } from "react";
-import axios from "axios";
-import {
-  Alert,
-  Button,
-  Card,
-  FieldError,
-  Form,
-  Input,
-  Label,
-  TextField,
-} from "@heroui/react";
+import { useState } from 'react';
+import axios from 'axios';
+import { Alert, Button, Card, FieldError, Form, Input, Label, TextField } from '@heroui/react';
 
-import { authService } from "@/services/authService";
-import { useAuthStore } from "@/stores/authStore";
+import { authService } from '@/services/authService';
+import { useAuthStore } from '@/stores/authStore';
 
 interface Props {
   setIsLogin: Dispatch<SetStateAction<boolean>>;
@@ -29,8 +20,8 @@ export default function LoginForm({ setIsLogin }: Props) {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    const login = String(formData.get("login") ?? "");
-    const password = String(formData.get("password") ?? "");
+    const login = String(formData.get('login') ?? '');
+    const password = String(formData.get('password') ?? '');
 
     setIsLoading(true);
 
@@ -40,9 +31,9 @@ export default function LoginForm({ setIsLogin }: Props) {
       useAuthStore.getState().login(token, user, password);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("Login ou senha inválidos. Verifique e tente novamente.");
+        setError('Login ou senha inválidos. Verifique e tente novamente.');
       } else {
-        setError("Não foi possível conectar ao servidor. Tente novamente.");
+        setError('Não foi possível conectar ao servidor. Tente novamente.');
       }
     } finally {
       setIsLoading(false);
@@ -70,9 +61,7 @@ export default function LoginForm({ setIsLogin }: Props) {
           <TextField isRequired minLength={6} name="password" type="password">
             <Label>Senha</Label>
             <Input placeholder="******" variant="secondary" />
-            <FieldError>
-              Digite uma senha com pelo menos 6 caracteres
-            </FieldError>
+            <FieldError>Digite uma senha com pelo menos 6 caracteres</FieldError>
           </TextField>
         </div>
       </Card.Content>
@@ -81,7 +70,7 @@ export default function LoginForm({ setIsLogin }: Props) {
           Cadastre-se
         </Button>
         <Button isPending={isLoading} type="submit" variant="primary">
-          {({ isPending }) => (isPending ? "Entrando..." : "Entrar")}
+          {({ isPending }) => (isPending ? 'Entrando...' : 'Entrar')}
         </Button>
       </Card.Footer>
     </Form>

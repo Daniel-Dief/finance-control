@@ -1,7 +1,7 @@
-import type { User } from "@/types/auth";
+import type { User } from '@/types/auth';
 
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface AuthStore {
   token: string | null;
@@ -19,19 +19,17 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       password: null,
       isLoggedIn: false,
-      login: (token, user, password) =>
-        set({ token, user, password, isLoggedIn: true }),
-      logout: () =>
-        set({ token: null, user: null, password: null, isLoggedIn: false }),
+      login: (token, user, password) => set({ token, user, password, isLoggedIn: true }),
+      logout: () => set({ token: null, user: null, password: null, isLoggedIn: false })
     }),
     {
-      name: "auth-storage",
+      name: 'auth-storage',
       partialize: (state) => ({
         token: state.token,
         user: state.user,
         password: state.password,
-        isLoggedIn: state.isLoggedIn,
-      }),
-    },
-  ),
+        isLoggedIn: state.isLoggedIn
+      })
+    }
+  )
 );

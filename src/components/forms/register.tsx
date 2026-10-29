@@ -1,20 +1,11 @@
-import type { Dispatch, FormEvent, SetStateAction } from "react";
+import type { Dispatch, FormEvent, SetStateAction } from 'react';
 
-import { useState } from "react";
-import axios from "axios";
-import {
-  Alert,
-  Button,
-  Card,
-  FieldError,
-  Form,
-  Input,
-  Label,
-  TextField,
-} from "@heroui/react";
+import { useState } from 'react';
+import axios from 'axios';
+import { Alert, Button, Card, FieldError, Form, Input, Label, TextField } from '@heroui/react';
 
-import { authService } from "@/services/authService";
-import { useAuthStore } from "@/stores/authStore";
+import { authService } from '@/services/authService';
+import { useAuthStore } from '@/stores/authStore';
 
 interface Props {
   setIsLogin: Dispatch<SetStateAction<boolean>>;
@@ -29,9 +20,9 @@ export default function RegisterForm({ setIsLogin }: Props) {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
-    const login = String(formData.get("login") ?? "");
-    const name = String(formData.get("name") ?? "");
-    const password = String(formData.get("password") ?? "");
+    const login = String(formData.get('login') ?? '');
+    const name = String(formData.get('name') ?? '');
+    const password = String(formData.get('password') ?? '');
 
     setIsLoading(true);
 
@@ -43,9 +34,9 @@ export default function RegisterForm({ setIsLogin }: Props) {
       useAuthStore.getState().login(token, user, password);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 409) {
-        setError("Já existe um usuário cadastrado com esse login.");
+        setError('Já existe um usuário cadastrado com esse login.');
       } else {
-        setError("Não foi possível concluir o registro. Tente novamente.");
+        setError('Não foi possível concluir o registro. Tente novamente.');
       }
     } finally {
       setIsLoading(false);
@@ -78,9 +69,7 @@ export default function RegisterForm({ setIsLogin }: Props) {
           <TextField isRequired minLength={6} name="password" type="password">
             <Label>Senha</Label>
             <Input placeholder="••••••••" variant="secondary" />
-            <FieldError>
-              Digite uma senha com pelo menos 6 caracteres
-            </FieldError>
+            <FieldError>Digite uma senha com pelo menos 6 caracteres</FieldError>
           </TextField>
         </div>
       </Card.Content>
@@ -89,7 +78,7 @@ export default function RegisterForm({ setIsLogin }: Props) {
           Entrar
         </Button>
         <Button isPending={isLoading} type="submit" variant="primary">
-          {({ isPending }) => (isPending ? "Cadastrando..." : "Cadastrar")}
+          {({ isPending }) => (isPending ? 'Cadastrando...' : 'Cadastrar')}
         </Button>
       </Card.Footer>
     </Form>

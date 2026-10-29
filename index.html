@@ -23,19 +23,19 @@
     <script>
       (function () {
         try {
-          var stored = localStorage.getItem("heroui-theme") || "dark";
+          var stored = localStorage.getItem('heroui-theme') || 'dark';
           var resolved =
-            stored === "system"
-              ? window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light"
+            stored === 'system'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
               : stored;
 
           document.documentElement.classList.add(resolved);
-          document.documentElement.setAttribute("data-theme", resolved);
+          document.documentElement.setAttribute('data-theme', resolved);
         } catch (error) {
-          document.documentElement.classList.add("dark");
-          document.documentElement.setAttribute("data-theme", "dark");
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
       })();
     </script>

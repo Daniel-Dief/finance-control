@@ -1,14 +1,14 @@
-import type { BudgetProgress } from "@/types/report";
+import type { BudgetProgress } from '@/types/report';
 
-import { LinearProgress } from "@mui/material";
-import { Spinner } from "@heroui/react";
+import { LinearProgress } from '@mui/material';
+import { Spinner } from '@heroui/react';
 
-import { formatCurrencyFromCents } from "@/utils/format";
+import { formatCurrencyFromCents } from '@/utils/format';
 
 export default function BudgetsPercent({
   budgets,
   isLoading,
-  error,
+  error
 }: {
   budgets: BudgetProgress[];
   isLoading: boolean;
@@ -32,20 +32,17 @@ export default function BudgetsPercent({
         <div key={budget.id}>
           <div className="mb-2 flex items-center justify-between gap-4 text-sm">
             <span className="font-medium">{budget.area_name}</span>
-            <span className={budget.exceeded ? "text-danger" : "text-muted"}>
-              {formatCurrencyFromCents(budget.spent)} de{" "}
-              {formatCurrencyFromCents(budget.amount)}
+            <span className={budget.exceeded ? 'text-danger' : 'text-muted'}>
+              {formatCurrencyFromCents(budget.spent)} de {formatCurrencyFromCents(budget.amount)}
             </span>
           </div>
           <LinearProgress
-            color={budget.exceeded ? "error" : "success"}
+            color={budget.exceeded ? 'error' : 'success'}
             sx={{ height: 10, borderRadius: 999 }}
             value={Math.min(100, Math.max(0, budget.percentage))}
             variant="determinate"
           />
-          <p
-            className={`mt-1 text-xs ${budget.exceeded ? "text-danger" : "text-muted"}`}
-          >
+          <p className={`mt-1 text-xs ${budget.exceeded ? 'text-danger' : 'text-muted'}`}>
             {budget.exceeded
               ? `Orçamento excedido em ${formatCurrencyFromCents(Math.abs(budget.remaining))}`
               : `Restam ${formatCurrencyFromCents(budget.remaining)}`}
@@ -53,9 +50,7 @@ export default function BudgetsPercent({
         </div>
       ))}
       {budgets.length === 0 ? (
-        <p className="text-sm text-muted">
-          Nenhum orçamento cadastrado para este mês.
-        </p>
+        <p className="text-sm text-muted">Nenhum orçamento cadastrado para este mês.</p>
       ) : null}
     </div>
   );

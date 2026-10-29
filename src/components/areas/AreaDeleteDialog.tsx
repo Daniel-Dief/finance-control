@@ -1,12 +1,12 @@
-import type { Area } from "@/types/area";
+import type { Area } from '@/types/area';
 
-import { useState } from "react";
-import { toast } from "@heroui/react";
+import { useState } from 'react';
+import { toast } from '@heroui/react';
 
-import { DeleteDialog } from "../DeleteDialog";
+import { DeleteDialog } from '../DeleteDialog';
 
-import { areaService } from "@/services/areaService";
-import { deleteAreasValidate } from "@/utils/mapErros";
+import { areaService } from '@/services/areaService';
+import { deleteAreasValidate } from '@/utils/mapErros';
 
 interface AreaDeleteDialogProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ export default function AreaDeleteDialog({
   isOpen,
   onOpenChange,
   area,
-  onDeleted,
+  onDeleted
 }: AreaDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -32,7 +32,7 @@ export default function AreaDeleteDialog({
 
     try {
       await areaService.remove(area.id);
-      toast.success("Área excluída com sucesso.");
+      toast.success('Área excluída com sucesso.');
       onDeleted(area);
       onOpenChange(false);
     } catch (err) {
@@ -46,7 +46,7 @@ export default function AreaDeleteDialog({
         return;
       }
 
-      toast.danger("Não foi possível excluir a área. Tente novamente.");
+      toast.danger('Não foi possível excluir a área. Tente novamente.');
     } finally {
       setIsDeleting(false);
     }
@@ -57,7 +57,7 @@ export default function AreaDeleteDialog({
       handleDelete={handleDelete}
       isDeleting={isDeleting}
       isOpen={isOpen}
-      name={area?.name ?? ""}
+      name={area?.name ?? ''}
       title="Excluir área?"
       onOpenChange={onOpenChange}
     />

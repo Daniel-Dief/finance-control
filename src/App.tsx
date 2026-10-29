@@ -1,14 +1,14 @@
-import { lazy, Suspense } from "react";
-import { Spinner } from "@heroui/react";
-import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from 'react';
+import { Spinner } from '@heroui/react';
+import { Route, Routes } from 'react-router-dom';
 
-import LoginPage from "@/pages/login";
+import LoginPage from '@/pages/login';
 
-const AreasPage = lazy(() => import("@/pages/areas"));
-const BudgetsPage = lazy(() => import("@/pages/budgets"));
-const CategoriesPage = lazy(() => import("@/pages/categories"));
-const DashboardPage = lazy(() => import("@/pages/dashboard"));
-const TransactionsPage = lazy(() => import("@/pages/transactions"));
+const AreasPage = lazy(() => import('@/pages/areas'));
+const BudgetsPage = lazy(() => import('@/pages/budgets'));
+const CategoriesPage = lazy(() => import('@/pages/categories'));
+const DashboardPage = lazy(() => import('@/pages/dashboard'));
+const TransactionsPage = lazy(() => import('@/pages/transactions'));
 
 function App() {
   return (

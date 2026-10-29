@@ -1,6 +1,6 @@
-export type { PaginatedResult } from "./pagination";
+export type { PaginatedResult } from './pagination';
 
-export type TransactionType = "income" | "expense";
+export type TransactionType = 'income' | 'expense';
 
 export interface Transaction {
   id: number;

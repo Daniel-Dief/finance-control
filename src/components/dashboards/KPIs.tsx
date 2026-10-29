@@ -1,6 +1,6 @@
-import { Spinner } from "@heroui/react";
+import { Spinner } from '@heroui/react';
 
-import { formatCurrencyFromCents } from "@/utils/format";
+import { formatCurrencyFromCents } from '@/utils/format';
 
 export interface KPIsProps {
   income: number;
@@ -12,16 +12,16 @@ export interface KPIsProps {
 function KpiCard({
   label,
   value,
-  tone,
+  tone
 }: {
   label: string;
   value: number;
-  tone: "income" | "expense" | "balance";
+  tone: 'income' | 'expense' | 'balance';
 }) {
   const toneClass = {
-    income: "text-success",
-    expense: "text-danger",
-    balance: value >= 0 ? "text-primary" : "text-danger",
+    income: 'text-success',
+    expense: 'text-danger',
+    balance: value >= 0 ? 'text-primary' : 'text-danger'
   }[tone];
 
   return (
@@ -34,12 +34,7 @@ function KpiCard({
   );
 }
 
-export default function KPIs({
-  income,
-  expense,
-  balance,
-  isLoading,
-}: KPIsProps) {
+export default function KPIs({ income, expense, balance, isLoading }: KPIsProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 interface AsyncDataState<T> {
   key: string;
@@ -16,7 +16,7 @@ interface UseAsyncDataResult<T> {
 export function useAsyncData<T>(
   load: () => Promise<T>,
   deps: readonly unknown[],
-  errorMessage: string,
+  errorMessage: string
 ): UseAsyncDataResult<T> {
   const [refreshIndex, setRefreshIndex] = useState(0);
   const [state, setState] = useState<AsyncDataState<T> | null>(null);
@@ -46,6 +46,6 @@ export function useAsyncData<T>(
     data: state?.data ?? null,
     error: state?.error ?? null,
     isLoading: state?.key !== key,
-    reload: () => setRefreshIndex((current) => current + 1),
+    reload: () => setRefreshIndex((current) => current + 1)
   };
 }

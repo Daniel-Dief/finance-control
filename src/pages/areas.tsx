@@ -1,28 +1,20 @@
-import type { Area } from "@/types/area";
+import type { Area } from '@/types/area';
 
-import { useEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  Label,
-  Pagination,
-  SearchField,
-  Spinner,
-  Table,
-} from "@heroui/react";
+import { useEffect, useState } from 'react';
+import { Alert, Button, Label, Pagination, SearchField, Spinner, Table } from '@heroui/react';
 
-import { AreaDeleteDialog, AreaFormDrawer } from "@/components/areas";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import DefaultLayout from "@/layouts/default";
-import { areaService } from "@/services/areaService";
-import { getPageItems } from "@/utils/pagination";
+import { AreaDeleteDialog, AreaFormDrawer } from '@/components/areas';
+import { useAsyncData } from '@/hooks/useAsyncData';
+import DefaultLayout from '@/layouts/default';
+import { areaService } from '@/services/areaService';
+import { getPageItems } from '@/utils/pagination';
 
 const PAGE_SIZE = 10;
 
 export default function AreasPage() {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingArea, setEditingArea] = useState<Area | null>(null);
@@ -39,14 +31,9 @@ export default function AreasPage() {
   }, [search]);
 
   const { data, error, isLoading, reload } = useAsyncData(
-    () =>
-      areaService.list({
-        name: debouncedSearch || undefined,
-        page,
-        limit: PAGE_SIZE,
-      }),
+    () => areaService.list({ name: debouncedSearch || undefined, page, limit: PAGE_SIZE }),
     [debouncedSearch, page],
-    "Não foi possível carregar as áreas. Tente novamente.",
+    'Não foi possível carregar as áreas. Tente novamente.'
   );
 
   const areas = data?.data ?? [];
@@ -134,9 +121,7 @@ export default function AreasPage() {
                 </Table.Header>
                 <Table.Body
                   renderEmptyState={() => (
-                    <div className="text-muted py-10 text-center">
-                      Nenhuma área encontrada.
-                    </div>
+                    <div className="text-muted py-10 text-center">Nenhuma área encontrada.</div>
                   )}
                 >
                   {areas.map((area) => (
@@ -145,18 +130,10 @@ export default function AreasPage() {
                       <Table.Cell>{area.id}</Table.Cell>
                       <Table.Cell>
                         <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="tertiary"
-                            onPress={() => openEdit(area)}
-                          >
+                          <Button size="sm" variant="tertiary" onPress={() => openEdit(area)}>
                             Editar
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            onPress={() => openDelete(area)}
-                          >
+                          <Button size="sm" variant="danger" onPress={() => openDelete(area)}>
                             Excluir
                           </Button>
                         </div>
@@ -181,27 +158,22 @@ export default function AreasPage() {
                 </Pagination.Previous>
               </Pagination.Item>
               {pages.map((item, index) =>
-                item === "ellipsis" ? (
+                item === 'ellipsis' ? (
                   <Pagination.Item key={`ellipsis-${index}`}>
                     <Pagination.Ellipsis />
                   </Pagination.Item>
                 ) : (
                   <Pagination.Item key={item}>
-                    <Pagination.Link
-                      isActive={item === page}
-                      onPress={() => setPage(item)}
-                    >
+                    <Pagination.Link isActive={item === page} onPress={() => setPage(item)}>
                       {item}
                     </Pagination.Link>
                   </Pagination.Item>
-                ),
+                )
               )}
               <Pagination.Item>
                 <Pagination.Next
                   isDisabled={page === totalPages}
-                  onPress={() =>
-                    setPage((current) => Math.min(totalPages, current + 1))
-                  }
+                  onPress={() => setPage((current) => Math.min(totalPages, current + 1))}
                 >
                   <Pagination.NextIcon />
                 </Pagination.Next>

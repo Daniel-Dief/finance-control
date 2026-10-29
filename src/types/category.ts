@@ -1,4 +1,4 @@
-export type { PaginatedResult } from "./pagination";
+export type { PaginatedResult } from './pagination';
 
 export interface Category {
   id: number;

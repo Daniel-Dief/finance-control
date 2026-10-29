@@ -1,13 +1,13 @@
-import type { Budget } from "@/types/budget";
+import type { Budget } from '@/types/budget';
 
-import { useState } from "react";
-import { toast } from "@heroui/react";
+import { useState } from 'react';
+import { toast } from '@heroui/react';
 
-import { DeleteDialog } from "../DeleteDialog";
+import { DeleteDialog } from '../DeleteDialog';
 
-import { budgetService } from "@/services/budgetService";
-import { formatPeriod } from "@/utils/format";
-import { deleteBudgetsValidate } from "@/utils/mapErros";
+import { budgetService } from '@/services/budgetService';
+import { formatPeriod } from '@/utils/format';
+import { deleteBudgetsValidate } from '@/utils/mapErros';
 
 interface BudgetDeleteDialogProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export default function BudgetDeleteDialog({
   onOpenChange,
   budget,
   areaName,
-  onDeleted,
+  onDeleted
 }: BudgetDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -35,7 +35,7 @@ export default function BudgetDeleteDialog({
 
     try {
       await budgetService.remove(budget.id);
-      toast.success("Orçamento excluído com sucesso.");
+      toast.success('Orçamento excluído com sucesso.');
       onDeleted(budget);
       onOpenChange(false);
     } catch (err) {
@@ -49,7 +49,7 @@ export default function BudgetDeleteDialog({
         return;
       }
 
-      toast.danger("Não foi possível excluir o orçamento. Tente novamente.");
+      toast.danger('Não foi possível excluir o orçamento. Tente novamente.');
     } finally {
       setIsDeleting(false);
     }
@@ -60,7 +60,7 @@ export default function BudgetDeleteDialog({
       handleDelete={handleDelete}
       isDeleting={isDeleting}
       isOpen={isOpen}
-      name={`${areaName} - ${budget ? formatPeriod(budget.month, budget.year) : ""}`}
+      name={`${areaName} - ${budget ? formatPeriod(budget.month, budget.year) : ''}`}
       title="Excluir orçamento?"
       onOpenChange={onOpenChange}
     />

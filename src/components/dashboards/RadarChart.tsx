@@ -1,10 +1,10 @@
-import type { Area } from "@/types/area";
-import type { RadarArea, ReportTransactionType } from "@/types/report";
+import type { Area } from '@/types/area';
+import type { RadarArea, ReportTransactionType } from '@/types/report';
 
-import { Button, Label, ListBox, Select, Spinner } from "@heroui/react";
-import { RadarChart as MUIRadarChart } from "@mui/x-charts/RadarChart";
+import { Button, Label, ListBox, Select, Spinner } from '@heroui/react';
+import { RadarChart as MUIRadarChart } from '@mui/x-charts/RadarChart';
 
-import { formatCurrencyFromCents } from "@/utils/format";
+import { formatCurrencyFromCents } from '@/utils/format';
 
 export default function RadarChart({
   areas,
@@ -17,7 +17,7 @@ export default function RadarChart({
   chartTextColor,
   chartSx,
   onTypeChange,
-  onAreaToggle,
+  onAreaToggle
 }: {
   areas: Area[];
   radarAreas: RadarArea[];
@@ -32,9 +32,9 @@ export default function RadarChart({
   onAreaToggle: (areaId: number) => void;
 }) {
   const colors =
-    type === "expense"
-      ? { primary: "#ef4444", secondary: "#fca5a5" }
-      : { primary: "#22c55e", secondary: "#86efac" };
+    type === 'expense'
+      ? { primary: '#ef4444', secondary: '#fca5a5' }
+      : { primary: '#22c55e', secondary: '#86efac' };
 
   return (
     <section className="rounded-2xl border border-default bg-surface p-5 shadow-sm">
@@ -50,8 +50,7 @@ export default function RadarChart({
             className="min-w-36"
             value={type}
             onChange={(value) =>
-              value !== null &&
-              onTypeChange(String(value) as ReportTransactionType)
+              value !== null && onTypeChange(String(value) as ReportTransactionType)
             }
           >
             <Label>Tipo</Label>
@@ -87,10 +86,9 @@ export default function RadarChart({
                   key={area.id}
                   size="sm"
                   variant={
-                    selectedAreaIds.length === 0 ||
-                    selectedAreaIds.includes(area.id)
-                      ? "primary"
-                      : "tertiary"
+                    selectedAreaIds.length === 0 || selectedAreaIds.includes(area.id)
+                      ? 'primary'
+                      : 'tertiary'
                   }
                   onPress={() => onAreaToggle(area.id)}
                 >
@@ -104,40 +102,34 @@ export default function RadarChart({
                 highlight="none"
                 radar={{
                   metrics: radarAreas.map((area) => area.area_name),
-                  max: Math.max(
-                    1,
-                    ...radarAreas.flatMap((area) => [area.value, area.median]),
-                  ),
+                  max: Math.max(1, ...radarAreas.flatMap((area) => [area.value, area.median]))
                 }}
                 series={[
                   {
-                    label: "Movimentação",
+                    label: 'Movimentação',
                     data: radarAreas.map((area) => area.value),
                     color: colors.primary,
                     fillArea: true,
-                    valueFormatter: (value) =>
-                      formatCurrencyFromCents(value ?? 0),
+                    valueFormatter: (value) => formatCurrencyFromCents(value ?? 0)
                   },
                   {
-                    label: "Mediana",
+                    label: 'Mediana',
                     data: radarAreas.map((area) => area.median),
                     color: colors.secondary,
-                    valueFormatter: (value) =>
-                      formatCurrencyFromCents(value ?? 0),
-                  },
+                    valueFormatter: (value) => formatCurrencyFromCents(value ?? 0)
+                  }
                 ]}
                 slotProps={{
                   legend: {
                     sx: {
                       color: chartTextColor,
-                      "& .MuiChartsLegend-label": { color: chartTextColor },
-                    },
-                  },
+                      '& .MuiChartsLegend-label': { color: chartTextColor }
+                    }
+                  }
                 }}
                 stripeColor={
-                  resolvedTheme === "dark"
-                    ? (index: number) =>
-                        index % 2 === 0 ? "#151515" : "#252525"
+                  resolvedTheme === 'dark'
+                    ? (index: number) => (index % 2 === 0 ? '#151515' : '#252525')
                     : undefined
                 }
                 sx={chartSx}

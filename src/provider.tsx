@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { Spinner, Toast } from "@heroui/react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Spinner, Toast } from '@heroui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ThemeProvider } from "@/components/theme-provider";
-import { refreshToken } from "@/services/apiClient";
-import { isTokenExpired } from "@/services/authService";
-import { useAuthStore } from "@/stores/authStore";
+import { ThemeProvider } from '@/components/theme-provider';
+import { refreshToken } from '@/services/apiClient';
+import { isTokenExpired } from '@/services/authService';
+import { useAuthStore } from '@/stores/authStore';
 
-const PUBLIC_PATHS = ["/login", "/register", "/logout"];
+const PUBLIC_PATHS = ['/login', '/register', '/logout'];
 const REFRESH_INTERVAL_MS = 60_000;
 
 export function Provider({ children }: { children: React.ReactNode }) {
@@ -64,16 +64,15 @@ export function Provider({ children }: { children: React.ReactNode }) {
     const isPublic = PUBLIC_PATHS.includes(location.pathname);
 
     if (!isLoggedIn && !isPublic) {
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     } else if (isLoggedIn && isPublic) {
-      navigate("/", { replace: true });
+      navigate('/', { replace: true });
     }
   }, [isInitialized, isLoggedIn, location.pathname, navigate]);
 
   const isPublic = PUBLIC_PATHS.includes(location.pathname);
 
-  const content =
-    !isInitialized || (!isLoggedIn && !isPublic) ? <AuthLoading /> : children;
+  const content = !isInitialized || (!isLoggedIn && !isPublic) ? <AuthLoading /> : children;
 
   return (
     <ThemeProvider>

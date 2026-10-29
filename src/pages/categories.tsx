@@ -1,38 +1,25 @@
-import type { Category } from "@/types/category";
+import type { Category } from '@/types/category';
 
-import { useEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  Label,
-  Pagination,
-  SearchField,
-  Spinner,
-  Table,
-} from "@heroui/react";
+import { useEffect, useState } from 'react';
+import { Alert, Button, Label, Pagination, SearchField, Spinner, Table } from '@heroui/react';
 
-import {
-  CategoryDeleteDialog,
-  CategoryFormDrawer,
-} from "@/components/categories";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import DefaultLayout from "@/layouts/default";
-import { categoryService } from "@/services/categoryService";
-import { getPageItems } from "@/utils/pagination";
+import { CategoryDeleteDialog, CategoryFormDrawer } from '@/components/categories';
+import { useAsyncData } from '@/hooks/useAsyncData';
+import DefaultLayout from '@/layouts/default';
+import { categoryService } from '@/services/categoryService';
+import { getPageItems } from '@/utils/pagination';
 
 const PAGE_SIZE = 10;
 
 export default function CategoriesPage() {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletingCategory, setDeletingCategory] = useState<Category | null>(
-    null,
-  );
+  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -44,14 +31,9 @@ export default function CategoriesPage() {
   }, [search]);
 
   const { data, error, isLoading, reload } = useAsyncData(
-    () =>
-      categoryService.list({
-        name: debouncedSearch || undefined,
-        page,
-        limit: PAGE_SIZE,
-      }),
+    () => categoryService.list({ name: debouncedSearch || undefined, page, limit: PAGE_SIZE }),
     [debouncedSearch, page],
-    "Não foi possível carregar as categorias. Tente novamente.",
+    'Não foi possível carregar as categorias. Tente novamente.'
   );
 
   const categories = data?.data ?? [];
@@ -87,9 +69,7 @@ export default function CategoriesPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Categorias
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Categorias</h1>
             <p className="text-muted text-sm">
               Gerencie as categorias usadas para organizar seus lançamentos.
             </p>
@@ -152,18 +132,10 @@ export default function CategoriesPage() {
                       <Table.Cell>{category.id}</Table.Cell>
                       <Table.Cell>
                         <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="tertiary"
-                            onPress={() => openEdit(category)}
-                          >
+                          <Button size="sm" variant="tertiary" onPress={() => openEdit(category)}>
                             Editar
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            onPress={() => openDelete(category)}
-                          >
+                          <Button size="sm" variant="danger" onPress={() => openDelete(category)}>
                             Excluir
                           </Button>
                         </div>
@@ -188,27 +160,22 @@ export default function CategoriesPage() {
                 </Pagination.Previous>
               </Pagination.Item>
               {pages.map((item, index) =>
-                item === "ellipsis" ? (
+                item === 'ellipsis' ? (
                   <Pagination.Item key={`ellipsis-${index}`}>
                     <Pagination.Ellipsis />
                   </Pagination.Item>
                 ) : (
                   <Pagination.Item key={item}>
-                    <Pagination.Link
-                      isActive={item === page}
-                      onPress={() => setPage(item)}
-                    >
+                    <Pagination.Link isActive={item === page} onPress={() => setPage(item)}>
                       {item}
                     </Pagination.Link>
                   </Pagination.Item>
-                ),
+                )
               )}
               <Pagination.Item>
                 <Pagination.Next
                   isDisabled={page === totalPages}
-                  onPress={() =>
-                    setPage((current) => Math.min(totalPages, current + 1))
-                  }
+                  onPress={() => setPage((current) => Math.min(totalPages, current + 1))}
                 >
                   <Pagination.NextIcon />
                 </Pagination.Next>

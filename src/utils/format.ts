@@ -1,22 +1,19 @@
 export const MONTH_NAMES = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro'
 ];
 
-export const MONTH_OPTIONS = MONTH_NAMES.map((label, index) => ({
-  label,
-  value: index + 1,
-}));
+export const MONTH_OPTIONS = MONTH_NAMES.map((label, index) => ({ label, value: index + 1 }));
 
 export function getYearOptions(span = 3): number[] {
   const current = new Date().getFullYear();
@@ -29,10 +26,7 @@ export function getYearOptions(span = 3): number[] {
   return years;
 }
 
-const brlFormatter = new Intl.NumberFormat("pt-BR", {
-  currency: "BRL",
-  style: "currency",
-});
+const brlFormatter = new Intl.NumberFormat('pt-BR', { currency: 'BRL', style: 'currency' });
 
 /**
  * A API armazena o valor do orçamento em centavos (ex.: R$ 1.500,00 => 150000).
@@ -44,9 +38,7 @@ export function formatCurrencyFromCents(cents: number): string {
 }
 
 export function formatChartAmount(cents: number | null): string {
-  return Math.round((cents ?? 0) / 100).toLocaleString("pt-BR", {
-    maximumFractionDigits: 0,
-  });
+  return Math.round((cents ?? 0) / 100).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
 }
 
 export function formatPeriod(month: number, year: number): string {
@@ -56,13 +48,13 @@ export function formatPeriod(month: number, year: number): string {
 }
 
 export function formatDateByString(date: string): string {
-  const [year, month, day] = date.slice(0, 10).split("-");
+  const [year, month, day] = date.slice(0, 10).split('-');
 
   return `${day}/${month}/${year}`;
 }
 
 function pad(value: number): string {
-  return value.toString().padStart(2, "0");
+  return value.toString().padStart(2, '0');
 }
 
 /**
@@ -80,10 +72,7 @@ export function getMonthRange(month: number): { from: string; to: string } {
   const year = new Date().getFullYear();
   const lastDay = new Date(year, month, 0).getDate();
 
-  return {
-    from: `${year}-${pad(month)}-01`,
-    to: `${year}-${pad(month)}-${pad(lastDay)}`,
-  };
+  return { from: `${year}-${pad(month)}-01`, to: `${year}-${pad(month)}-${pad(lastDay)}` };
 }
 
 export function getCurrentMonth(): string {

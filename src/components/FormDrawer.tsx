@@ -1,5 +1,5 @@
-import { ReactNode, useEffect, useRef } from "react";
-import { Button, Drawer, useMediaQuery } from "@heroui/react";
+import { ReactNode, useEffect, useRef } from 'react';
+import { Button, Drawer, useMediaQuery } from '@heroui/react';
 
 interface FormDrawerProps {
   title: string;
@@ -16,9 +16,9 @@ export function FormDrawer({
   onOpenChange,
   isSaving,
   onSubmit,
-  children,
+  children
 }: FormDrawerProps) {
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,8 +40,8 @@ export function FormDrawer({
           'input:not([type="hidden"]):not([disabled]):not([aria-disabled="true"])',
           'textarea:not([disabled]):not([aria-disabled="true"])',
           'select:not([disabled]):not([aria-disabled="true"])',
-          '[role="combobox"]:not([disabled]):not([aria-disabled="true"])',
-        ].join(", "),
+          '[role="combobox"]:not([disabled]):not([aria-disabled="true"])'
+        ].join(', ')
       );
 
       firstInput?.focus();
@@ -52,7 +52,7 @@ export function FormDrawer({
 
   return (
     <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Drawer.Content placement={isMobile ? "bottom" : "right"}>
+      <Drawer.Content placement={isMobile ? 'bottom' : 'right'}>
         <Drawer.Dialog>
           <Drawer.Handle />
           <Drawer.CloseTrigger />
@@ -65,7 +65,7 @@ export function FormDrawer({
               Cancelar
             </Button>
             <Button isPending={isSaving} variant="primary" onPress={onSubmit}>
-              {isSaving ? "Salvando..." : "Salvar"}
+              {isSaving ? 'Salvando...' : 'Salvar'}
             </Button>
           </Drawer.Footer>
         </Drawer.Dialog>

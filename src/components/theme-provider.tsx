@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useMemo } from "react";
-import { useTheme } from "@heroui/react";
+import { createContext, useCallback, useContext, useMemo } from 'react';
+import { useTheme } from '@heroui/react';
 
 interface ThemeContextValue {
   theme: string;
@@ -17,27 +17,25 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
  * theme as the `.dark`/`.light` class and `data-theme` attribute on `<html>`.
  */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { theme, resolvedTheme, setTheme } = useTheme("dark");
+  const { theme, resolvedTheme, setTheme } = useTheme('dark');
 
   const toggleTheme = useCallback(() => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   }, [resolvedTheme, setTheme]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({ theme, resolvedTheme, setTheme, toggleTheme }),
-    [theme, resolvedTheme, setTheme, toggleTheme],
+    [theme, resolvedTheme, setTheme, toggleTheme]
   );
 
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeContext(): ThemeContextValue {
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error("useThemeContext must be used within a ThemeProvider");
+    throw new Error('useThemeContext must be used within a ThemeProvider');
   }
 
   return context;

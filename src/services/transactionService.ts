@@ -3,10 +3,10 @@ import type {
   TransactionPayload,
   TransactionType,
   TransactionUpdatePayload,
-  PaginatedResult,
-} from "@/types/transaction";
+  PaginatedResult
+} from '@/types/transaction';
 
-import { apiClient } from "@/services/apiClient";
+import { apiClient } from '@/services/apiClient';
 
 export interface TransactionListParams {
   type?: TransactionType;
@@ -20,25 +20,21 @@ export interface TransactionListParams {
 
 const DEFAULT_LIMIT = 50;
 
-function emptyPage(
-  params: TransactionListParams,
-): PaginatedResult<Transaction> {
+function emptyPage(params: TransactionListParams): PaginatedResult<Transaction> {
   return {
     data: [],
     page: params.page ?? 1,
     limit: params.limit ?? DEFAULT_LIMIT,
     total: 0,
-    total_pages: 0,
+    total_pages: 0
   };
 }
 
 export const transactionService = {
-  async list(
-    params: TransactionListParams = {},
-  ): Promise<PaginatedResult<Transaction>> {
+  async list(params: TransactionListParams = {}): Promise<PaginatedResult<Transaction>> {
     const { data } = await apiClient.get<PaginatedResult<Transaction> | null>(
-      "/transactions/list",
-      { params },
+      '/transactions/list',
+      { params }
     );
 
     // A API responde 204 (corpo vazio) quando não há transações cadastradas.
@@ -54,25 +50,16 @@ export const transactionService = {
     return data;
   },
   async create(payload: TransactionPayload): Promise<Transaction> {
-    const { data } = await apiClient.post<Transaction>(
-      "/transactions/create",
-      payload,
-    );
+    const { data } = await apiClient.post<Transaction>('/transactions/create', payload);
 
     return data;
   },
-  async update(
-    id: number,
-    payload: TransactionUpdatePayload,
-  ): Promise<Transaction> {
-    const { data } = await apiClient.put<Transaction>(
-      `/transactions/${id}`,
-      payload,
-    );
+  async update(id: number, payload: TransactionUpdatePayload): Promise<Transaction> {
+    const { data } = await apiClient.put<Transaction>(`/transactions/${id}`, payload);
 
     return data;
   },
   async remove(id: number): Promise<void> {
     await apiClient.delete(`/transactions/${id}`);
-  },
+  }
 };

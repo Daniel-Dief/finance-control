@@ -1,8 +1,8 @@
-import type { Key } from "@heroui/react";
-import type { Area } from "@/types/area";
-import type { Budget } from "@/types/budget";
+import type { Key } from '@heroui/react';
+import type { Area } from '@/types/area';
+import type { Budget } from '@/types/budget';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Alert,
   Form,
@@ -12,15 +12,15 @@ import {
   NumberField,
   Select,
   TextField,
-  toast,
-} from "@heroui/react";
+  toast
+} from '@heroui/react';
 
-import { FormDrawer } from "../FormDrawer";
+import { FormDrawer } from '../FormDrawer';
 
-import { budgetService } from "@/services/budgetService";
-import { MONTH_OPTIONS, formatCurrencyFromCents } from "@/utils/format";
-import { formsBudgetsValidate } from "@/utils/validation";
-import { formsBudgestErrors } from "@/utils/mapErros";
+import { budgetService } from '@/services/budgetService';
+import { MONTH_OPTIONS, formatCurrencyFromCents } from '@/utils/format';
+import { formsBudgetsValidate } from '@/utils/validation';
+import { formsBudgestErrors } from '@/utils/mapErros';
 
 interface BudgetFormDrawerProps {
   isOpen: boolean;
@@ -35,25 +35,21 @@ export default function BudgetFormDrawer({
   onOpenChange,
   budget,
   areas,
-  onSaved,
+  onSaved
 }: BudgetFormDrawerProps) {
   const isEditing = Boolean(budget);
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
 
-  const [areaId, setAreaId] = useState<Key | null>(
-    budget ? String(budget.area_id) : null,
-  );
+  const [areaId, setAreaId] = useState<Key | null>(budget ? String(budget.area_id) : null);
   const [month, setMonth] = useState<Key | null>(
-    budget ? String(budget.month) : String(currentMonth),
+    budget ? String(budget.month) : String(currentMonth)
   );
   const [year, setYear] = useState<number>(budget?.year ?? currentYear);
-  const [amountCents, setAmountCents] = useState<number | null>(
-    budget ? budget.amount : null,
-  );
+  const [amountCents, setAmountCents] = useState<number | null>(budget ? budget.amount : null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const currentFormKey = isOpen ? String(budget?.id ?? "new") : null;
+  const currentFormKey = isOpen ? String(budget?.id ?? 'new') : null;
   const [formKey, setFormKey] = useState(currentFormKey);
 
   if (currentFormKey !== formKey) {
@@ -74,7 +70,7 @@ export default function BudgetFormDrawer({
       areaId,
       month,
       year,
-      amountCents,
+      amountCents
     });
 
     if (!validated.isValid) {
@@ -87,7 +83,7 @@ export default function BudgetFormDrawer({
       amount: Number(amountCents),
       area_id: Number(areaId),
       month: Number(month),
-      year,
+      year
     };
 
     setError(null);
@@ -96,10 +92,10 @@ export default function BudgetFormDrawer({
     try {
       if (isEditing && budget) {
         await budgetService.update(budget.id, payload);
-        toast.success("Orçamento atualizado com sucesso.");
+        toast.success('Orçamento atualizado com sucesso.');
       } else {
         await budgetService.create(payload);
-        toast.success("Orçamento criado com sucesso.");
+        toast.success('Orçamento criado com sucesso.');
       }
 
       onSaved();
@@ -113,14 +109,14 @@ export default function BudgetFormDrawer({
         return;
       }
 
-      toast.danger("Não foi possível salvar o orçamento. Tente novamente.");
+      toast.danger('Não foi possível salvar o orçamento. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
   }
 
   function handleAmountChange(next: string) {
-    const digits = next.replace(/\D/g, "");
+    const digits = next.replace(/\D/g, '');
 
     if (!digits) {
       setAmountCents(null);
@@ -135,14 +131,13 @@ export default function BudgetFormDrawer({
     }
   }
 
-  const amountText =
-    amountCents === null ? "" : formatCurrencyFromCents(amountCents);
+  const amountText = amountCents === null ? '' : formatCurrencyFromCents(amountCents);
 
   return (
     <FormDrawer
       isOpen={isOpen}
       isSaving={isSaving}
-      title={isEditing ? "Editar orçamento" : "Novo orçamento"}
+      title={isEditing ? 'Editar orçamento' : 'Novo orçamento'}
       onOpenChange={onOpenChange}
       onSubmit={onSubmit}
     >
@@ -158,9 +153,7 @@ export default function BudgetFormDrawer({
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Title>Nenhuma área cadastrada</Alert.Title>
-              <Alert.Description>
-                Cadastre uma área antes de criar um orçamento.
-              </Alert.Description>
+              <Alert.Description>Cadastre uma área antes de criar um orçamento.</Alert.Description>
             </Alert.Content>
           </Alert>
         ) : null}
@@ -191,11 +184,7 @@ export default function BudgetFormDrawer({
           <Select.Popover>
             <ListBox>
               {areas.map((area) => (
-                <ListBox.Item
-                  key={area.id}
-                  id={String(area.id)}
-                  textValue={area.name}
-                >
+                <ListBox.Item key={area.id} id={String(area.id)} textValue={area.name}>
                   {area.name}
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
@@ -220,11 +209,7 @@ export default function BudgetFormDrawer({
           <Select.Popover>
             <ListBox>
               {MONTH_OPTIONS.map((option) => (
-                <ListBox.Item
-                  key={option.value}
-                  id={String(option.value)}
-                  textValue={option.label}
-                >
+                <ListBox.Item key={option.value} id={String(option.value)} textValue={option.label}>
                   {option.label}
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
@@ -249,18 +234,9 @@ export default function BudgetFormDrawer({
           </NumberField.Group>
         </NumberField>
 
-        <TextField
-          isRequired
-          name="amount"
-          value={amountText}
-          onChange={handleAmountChange}
-        >
+        <TextField isRequired name="amount" value={amountText} onChange={handleAmountChange}>
           <Label>Valor previsto</Label>
-          <Input
-            inputMode="numeric"
-            placeholder="R$ 0,00"
-            variant="secondary"
-          />
+          <Input inputMode="numeric" placeholder="R$ 0,00" variant="secondary" />
         </TextField>
       </Form>
     </FormDrawer>
