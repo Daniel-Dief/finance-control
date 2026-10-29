@@ -56,10 +56,7 @@ export function formatPeriod(month: number, year: number): string {
 }
 
 export function formatDateByString(date: string): string {
-  const dateObj = new Date(date);
-  const day = dateObj.getDate().toString().padStart(2, "0");
-  const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-  const year = dateObj.getFullYear();
+  const [year, month, day] = date.slice(0, 10).split("-");
 
   return `${day}/${month}/${year}`;
 }
