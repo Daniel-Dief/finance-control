@@ -5,7 +5,6 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { useAuthStore } from "@/stores/authStore";
 
 const NAV_ITEMS = [
-  { label: "Início", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Áreas", href: "/areas" },
   { label: "Categorias", href: "/categories" },
@@ -14,7 +13,7 @@ const NAV_ITEMS = [
 ];
 
 const PAGE_PREFETCH: Record<string, () => Promise<unknown>> = {
-  "/": () => import("@/pages/index"),
+  "/": () => import("@/pages/transactions"),
   "/dashboard": () => import("@/pages/dashboard"),
   "/areas": () => import("@/pages/areas"),
   "/categories": () => import("@/pages/categories"),
