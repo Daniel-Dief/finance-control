@@ -43,6 +43,12 @@ export function formatCurrencyFromCents(cents: number): string {
   return brlFormatter.format(value / 100);
 }
 
+export function formatChartAmount(cents: number | null): string {
+  return Math.round((cents ?? 0) / 100).toLocaleString("pt-BR", {
+    maximumFractionDigits: 0,
+  });
+}
+
 export function formatPeriod(month: number, year: number): string {
   const name = MONTH_NAMES[month - 1] ?? `Mês ${month}`;
 

@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "heroui-react": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@heroui/react-mcp@1.1.3"],
+      "timeout": 120000
+    },
+    "mui-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@mui/mcp@latest"],
+      "timeout": 120000
+    }
+  }
+}

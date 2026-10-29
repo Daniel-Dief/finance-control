@@ -3,7 +3,13 @@
   "mcp": {
     "heroui-react": {
       "type": "local",
-      "command": ["npx", "-y", "@heroui/react-mcp@latest"]
+      "command": ["npx", "-y", "@heroui/react-mcp@1.1.3"],
+      "timeout": 120000
+    },
+    "mui-mcp": {
+      "type": "local",
+      "command": ["npx", "-y", "@mui/mcp@latest"],
+      "timeout": 120000
     }
   }
 }

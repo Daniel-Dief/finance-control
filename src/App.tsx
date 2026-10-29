@@ -7,6 +7,7 @@ import LoginPage from "@/pages/login";
 const AreasPage = lazy(() => import("@/pages/areas"));
 const BudgetsPage = lazy(() => import("@/pages/budgets"));
 const CategoriesPage = lazy(() => import("@/pages/categories"));
+const DashboardPage = lazy(() => import("@/pages/dashboard"));
 const IndexPage = lazy(() => import("@/pages/index"));
 const TransactionsPage = lazy(() => import("@/pages/transactions"));
 
@@ -25,6 +26,7 @@ function App() {
         <Route element={<CategoriesPage />} path="/categories" />
         <Route element={<BudgetsPage />} path="/budgets" />
         <Route element={<TransactionsPage />} path="/transactions" />
+        <Route element={<DashboardPage />} path="/dashboard" />
         <Route element={<IndexPage />} path="/" />
       </Routes>
     </Suspense>

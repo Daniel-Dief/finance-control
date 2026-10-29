@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/authStore";
 
 const NAV_ITEMS = [
   { label: "Início", href: "/" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Áreas", href: "/areas" },
   { label: "Categorias", href: "/categories" },
   { label: "Orçamentos", href: "/budgets" },
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
 
 const PAGE_PREFETCH: Record<string, () => Promise<unknown>> = {
   "/": () => import("@/pages/index"),
+  "/dashboard": () => import("@/pages/dashboard"),
   "/areas": () => import("@/pages/areas"),
   "/categories": () => import("@/pages/categories"),
   "/budgets": () => import("@/pages/budgets"),
