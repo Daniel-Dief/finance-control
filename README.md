@@ -24,17 +24,17 @@ O frontend consome uma API REST configurável por variável de ambiente e foi co
 
 ## Stack
 
-| Camada | Tecnologia |
-| --- | --- |
-| UI | React 19, HeroUI v3, Tailwind CSS 4 |
-| Linguagem | TypeScript (modo estrito) |
-| Build/dev server | Vite 8 |
-| Roteamento | React Router DOM 7 |
-| Gráficos | MUI X Charts 9 |
-| Estado global | Zustand 5 (com persistência em `localStorage`) |
-| HTTP | Axios |
-| Efeito visual | OGL (componente `GradientWaves` na tela de login) |
-| Qualidade de código | ESLint 10 e Prettier 3 |
+| Camada              | Tecnologia                                        |
+| ------------------- | ------------------------------------------------- |
+| UI                  | React 19, HeroUI v3, Tailwind CSS 4               |
+| Linguagem           | TypeScript (modo estrito)                         |
+| Build/dev server    | Vite 8                                            |
+| Roteamento          | React Router DOM 7                                |
+| Gráficos            | MUI X Charts 9                                    |
+| Estado global       | Zustand 5 (com persistência em `localStorage`)    |
+| HTTP                | Axios                                             |
+| Efeito visual       | OGL (componente `GradientWaves` na tela de login) |
+| Qualidade de código | ESLint 10 e Prettier 3                            |
 
 ## Requisitos
 
@@ -67,8 +67,8 @@ Copy-Item .env.exemple .env
 
 Variável disponível:
 
-| Variável | Descrição | Padrão |
-| --- | --- | --- |
+| Variável       | Descrição            | Padrão                  |
+| -------------- | -------------------- | ----------------------- |
 | `VITE_API_URL` | URL base da API REST | `http://localhost:1323` |
 
 Se a variável não for definida, o fallback `http://localhost:1323` é usado em `src/services/apiClient.ts`.
@@ -92,13 +92,13 @@ Para criar um orçamento ou uma transação, é necessário ter pelo menos uma �
 
 ## Scripts
 
-| Comando | Descrição |
-| --- | --- |
-| `bun run dev` | Inicia o servidor de desenvolvimento do Vite. |
-| `bun run build` | Executa a checagem de tipos com `tsc` e gera o build de produção em `dist/`. |
-| `bun run preview` | Serve localmente o build de produção. |
-| `bun run lint` | Executa o ESLint com correção automática. |
-| `bun run format` | Formata o projeto com Prettier. |
+| Comando           | Descrição                                                                    |
+| ----------------- | ---------------------------------------------------------------------------- |
+| `bun run dev`     | Inicia o servidor de desenvolvimento do Vite.                                |
+| `bun run build`   | Executa a checagem de tipos com `tsc` e gera o build de produção em `dist/`. |
+| `bun run preview` | Serve localmente o build de produção.                                        |
+| `bun run lint`    | Executa o ESLint com correção automática.                                    |
+| `bun run format`  | Formata o projeto com Prettier.                                              |
 
 ## Estrutura do projeto
 
@@ -120,15 +120,15 @@ O alias `@/*` aponta para `src/*`.
 
 ## Rotas
 
-| Rota | Acesso | Tela |
-| --- | --- | --- |
-| `/login` | Pública | Login e cadastro |
-| `/` | Protegida | Transações (atalho) |
-| `/transactions` | Protegida | Transações |
-| `/dashboard` | Protegida | Dashboard e relatórios |
-| `/areas` | Protegida | Áreas |
-| `/categories` | Protegida | Categorias |
-| `/budgets` | Protegida | Orçamentos |
+| Rota            | Acesso    | Tela                   |
+| --------------- | --------- | ---------------------- |
+| `/login`        | Pública   | Login e cadastro       |
+| `/`             | Protegida | Transações (atalho)    |
+| `/transactions` | Protegida | Transações             |
+| `/dashboard`    | Protegida | Dashboard e relatórios |
+| `/areas`        | Protegida | Áreas                  |
+| `/categories`   | Protegida | Categorias             |
+| `/budgets`      | Protegida | Orçamentos             |
 
 O controle de acesso é feito em `src/provider.tsx`, que valida a sessão antes de renderizar as rotas e redireciona usuários sem autenticação para `/login`.
 
@@ -138,14 +138,14 @@ A URL base é definida por `VITE_API_URL`. As requisições autenticadas enviam 
 
 ### Endpoints utilizados
 
-| Recurso | Endpoints |
-| --- | --- |
-| Autenticação | `POST /auth/login`, `POST /auth/register` |
-| Áreas | `GET /areas/list`, `GET /areas/{id}`, `POST /areas/create`, `PUT /areas/{id}`, `DELETE /areas/{id}` |
-| Categorias | `GET /categories/list`, `GET /categories/{id}`, `POST /categories/create`, `PUT /categories/{id}`, `DELETE /categories/{id}` |
-| Orçamentos | `GET /budgets/list`, `GET /budgets/{id}`, `POST /budgets/create`, `PUT /budgets/{id}`, `DELETE /budgets/{id}` |
-| Transações | `GET /transactions/list`, `GET /transactions/{id}`, `POST /transactions/create`, `PUT /transactions/{id}`, `DELETE /transactions/{id}` |
-| Relatórios | `GET /reports/kpis`, `GET /reports/line-chart`, `GET /reports/radar-chart`, `GET /reports/budgets` |
+| Recurso      | Endpoints                                                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Autenticação | `POST /auth/login`, `POST /auth/register`                                                                                              |
+| Áreas        | `GET /areas/list`, `GET /areas/{id}`, `POST /areas/create`, `PUT /areas/{id}`, `DELETE /areas/{id}`                                    |
+| Categorias   | `GET /categories/list`, `GET /categories/{id}`, `POST /categories/create`, `PUT /categories/{id}`, `DELETE /categories/{id}`           |
+| Orçamentos   | `GET /budgets/list`, `GET /budgets/{id}`, `POST /budgets/create`, `PUT /budgets/{id}`, `DELETE /budgets/{id}`                          |
+| Transações   | `GET /transactions/list`, `GET /transactions/{id}`, `POST /transactions/create`, `PUT /transactions/{id}`, `DELETE /transactions/{id}` |
+| Relatórios   | `GET /reports/kpis`, `GET /reports/line-chart`, `GET /reports/radar-chart`, `GET /reports/budgets`                                     |
 
 ### Convenções da API
 
