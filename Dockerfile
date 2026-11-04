@@ -1,5 +1,9 @@
+# syntax=docker/dockerfile:1
+
 # Build stage
-FROM oven/bun:1 AS builder
+# The bundle output is platform-independent, so the build runs on the native
+# build platform (avoids slow QEMU emulation when cross-building for arm64).
+FROM --platform=$BUILDPLATFORM oven/bun:1 AS builder
 
 WORKDIR /app
 
@@ -16,6 +20,8 @@ COPY . .
 RUN bun run build
 
 # Production stage
+# nginx:alpine is multi-arch, so it resolves to the target platform automatically
+# (linux/amd64, linux/arm64, ...).
 FROM nginx:alpine AS runner
 
 # Update packages to fix vulnerabilities

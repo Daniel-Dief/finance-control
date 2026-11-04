@@ -195,6 +195,28 @@ docker build -t finance-control .
 docker run --rm -p 8080:80 finance-control
 ```
 
+#### Múltiplas arquiteturas (amd64 e arm64)
+
+O `Dockerfile` é compatível com `linux/amd64` e `linux/arm64` (e demais arquiteturas suportadas pelas imagens base). O estágio de build roda na plataforma nativa via `--platform=$BUILDPLATFORM`, evitando emulação QEMU, e o `nginx:alpine` é resolvido para a plataforma de destino.
+
+Para gerar e publicar uma imagem multi-arquitetura:
+
+```bash
+docker buildx create --use --name finance-builder   # apenas na primeira vez
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t <usuario>/finance-control:latest \
+  --push .
+```
+
+Para apenas construir a imagem local rodando em ARM (ex.: Raspberry Pi ou Mac com Apple Silicon), use a plataforma única com `--load`:
+
+```bash
+docker buildx build --platform linux/arm64 -t finance-control --load .
+```
+
+> **Emulação:** ao cross-buildar (ex.: gerar `arm64` em uma máquina `amd64`), o estágio final executa `apk upgrade` com binários da arquitetura de destino. Isso exige emulação QEMU registrada no builder (`docker run --privileged --rm tonistiigi/binfmt --install arm64`, ou `docker/setup-qemu-action` em CI). Em hosts ARM o build roda nativamente, sem emulação.
+
 > **Importante:** no Vite, `VITE_API_URL` é incorporada ao bundle durante o build. O `Dockerfile` atual não recebe essa variável como build arg; portanto, sem ajuste, a imagem usa o fallback `http://localhost:1323`. Para apontar para outra API no container, adicione um `ARG`/`ENV` de `VITE_API_URL` antes de `bun run build` ou defina a variável no ambiente de build.
 
 ### Vercel
