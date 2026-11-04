@@ -1,27 +1,35 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Layout } from "@/components/layout"
-import Dashboard from "@/pages/dashboard"
-import AreasPage from "@/pages/areas"
-import CategoriesPage from "@/pages/categories"
-import BudgetsPage from "@/pages/budgets"
-import TransactionsPage from "@/pages/transactions"
-import { Toaster } from "@/components/ui/sonner"
+import { lazy, Suspense } from 'react';
+import { Spinner } from '@heroui/react';
+import { Route, Routes } from 'react-router-dom';
 
-export function App() {
+import LoginPage from '@/pages/login';
+
+const AreasPage = lazy(() => import('@/pages/areas'));
+const BudgetsPage = lazy(() => import('@/pages/budgets'));
+const CategoriesPage = lazy(() => import('@/pages/categories'));
+const DashboardPage = lazy(() => import('@/pages/dashboard'));
+const TransactionsPage = lazy(() => import('@/pages/transactions'));
+
+function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/areas" element={<AreasPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/budgets" element={<BudgetsPage />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-        </Routes>
-      </Layout>
-      <Toaster />
-    </BrowserRouter>
-  )
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Spinner size="lg" />
+        </div>
+      }
+    >
+      <Routes>
+        <Route element={<LoginPage />} path="/login" />
+        <Route element={<AreasPage />} path="/areas" />
+        <Route element={<CategoriesPage />} path="/categories" />
+        <Route element={<BudgetsPage />} path="/budgets" />
+        <Route element={<TransactionsPage />} path="/transactions" />
+        <Route element={<DashboardPage />} path="/dashboard" />
+        <Route element={<TransactionsPage />} path="/" />
+      </Routes>
+    </Suspense>
+  );
 }
 
-export default App
+export default App;
