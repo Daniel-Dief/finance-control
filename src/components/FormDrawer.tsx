@@ -18,7 +18,7 @@ export function FormDrawer({
   onSubmit,
   children
 }: FormDrawerProps) {
-  const isMobile = useMediaQuery('(max-width: 640px)');
+  const isMobile = useMediaQuery('(max-width: 767px)');
   const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

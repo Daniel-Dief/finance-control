@@ -69,12 +69,12 @@ export default function CategoriesPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Categorias</h1>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Categorias</h1>
             <p className="text-muted text-sm">
               Gerencie as categorias usadas para organizar seus lançamentos.
             </p>
           </div>
-          <Button variant="primary" onPress={openCreate}>
+          <Button className="w-full sm:w-auto" variant="primary" onPress={openCreate}>
             Nova categoria
           </Button>
         </div>
@@ -111,46 +111,96 @@ export default function CategoriesPage() {
             </Button>
           </div>
         ) : (
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Categorias" className="min-w-[600px]">
-                <Table.Header>
-                  <Table.Column isRowHeader>Nome</Table.Column>
-                  <Table.Column>ID</Table.Column>
-                  <Table.Column>Ações</Table.Column>
-                </Table.Header>
-                <Table.Body
-                  renderEmptyState={() => (
-                    <div className="text-muted py-10 text-center">
-                      Nenhuma categoria encontrada.
-                    </div>
-                  )}
-                >
-                  {categories.map((category) => (
-                    <Table.Row key={category.id}>
-                      <Table.Cell>{category.name}</Table.Cell>
-                      <Table.Cell>{category.id}</Table.Cell>
-                      <Table.Cell>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="tertiary" onPress={() => openEdit(category)}>
-                            Editar
-                          </Button>
-                          <Button size="sm" variant="danger" onPress={() => openDelete(category)}>
-                            Excluir
-                          </Button>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <Table.ScrollContainer>
+                  <Table.Content aria-label="Categorias" className="min-w-[600px]">
+                    <Table.Header>
+                      <Table.Column isRowHeader>Nome</Table.Column>
+                      <Table.Column>ID</Table.Column>
+                      <Table.Column>Ações</Table.Column>
+                    </Table.Header>
+                    <Table.Body
+                      renderEmptyState={() => (
+                        <div className="text-muted py-10 text-center">
+                          Nenhuma categoria encontrada.
                         </div>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
+                      )}
+                    >
+                      {categories.map((category) => (
+                        <Table.Row key={category.id}>
+                          <Table.Cell>{category.name}</Table.Cell>
+                          <Table.Cell>{category.id}</Table.Cell>
+                          <Table.Cell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="tertiary"
+                                onPress={() => openEdit(category)}
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                onPress={() => openDelete(category)}
+                              >
+                                Excluir
+                              </Button>
+                            </div>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Content>
+                </Table.ScrollContainer>
+              </Table>
+            </div>
+
+            <div className="flex flex-col gap-3 md:hidden">
+              {categories.length === 0 ? (
+                <div className="text-muted rounded-xl border border-default bg-surface p-6 text-center text-sm">
+                  Nenhuma categoria encontrada.
+                </div>
+              ) : (
+                categories.map((category) => (
+                  <article
+                    key={category.id}
+                    className="rounded-xl border border-default bg-surface p-4 shadow-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{category.name}</p>
+                      <p className="text-muted mt-1 text-xs">ID #{category.id}</p>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="tertiary"
+                        onPress={() => openEdit(category)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="danger"
+                        onPress={() => openDelete(category)}
+                      >
+                        Excluir
+                      </Button>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </>
         )}
 
         {!isLoading && !error && totalPages > 1 && (
           <Pagination className="justify-center">
-            <Pagination.Content>
+            <Pagination.Content className="flex-wrap justify-center self-center">
               <Pagination.Item>
                 <Pagination.Previous
                   isDisabled={page === 1}

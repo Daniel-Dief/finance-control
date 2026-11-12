@@ -84,7 +84,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
 
 function AuthLoading() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-dvh items-center justify-center">
       <Spinner size="lg" />
     </div>
   );

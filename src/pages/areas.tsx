@@ -69,12 +69,12 @@ export default function AreasPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Áreas</h1>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Áreas</h1>
             <p className="text-muted text-sm">
               Gerencie as áreas usadas para organizar seus lançamentos.
             </p>
           </div>
-          <Button variant="primary" onPress={openCreate}>
+          <Button className="w-full sm:w-auto" variant="primary" onPress={openCreate}>
             Nova área
           </Button>
         </div>
@@ -111,44 +111,86 @@ export default function AreasPage() {
             </Button>
           </div>
         ) : (
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Áreas" className="min-w-[600px]">
-                <Table.Header>
-                  <Table.Column isRowHeader>Nome</Table.Column>
-                  <Table.Column>ID</Table.Column>
-                  <Table.Column>Ações</Table.Column>
-                </Table.Header>
-                <Table.Body
-                  renderEmptyState={() => (
-                    <div className="text-muted py-10 text-center">Nenhuma área encontrada.</div>
-                  )}
-                >
-                  {areas.map((area) => (
-                    <Table.Row key={area.id}>
-                      <Table.Cell>{area.name}</Table.Cell>
-                      <Table.Cell>{area.id}</Table.Cell>
-                      <Table.Cell>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="tertiary" onPress={() => openEdit(area)}>
-                            Editar
-                          </Button>
-                          <Button size="sm" variant="danger" onPress={() => openDelete(area)}>
-                            Excluir
-                          </Button>
-                        </div>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <Table.ScrollContainer>
+                  <Table.Content aria-label="Áreas" className="min-w-[600px]">
+                    <Table.Header>
+                      <Table.Column isRowHeader>Nome</Table.Column>
+                      <Table.Column>ID</Table.Column>
+                      <Table.Column>Ações</Table.Column>
+                    </Table.Header>
+                    <Table.Body
+                      renderEmptyState={() => (
+                        <div className="text-muted py-10 text-center">Nenhuma área encontrada.</div>
+                      )}
+                    >
+                      {areas.map((area) => (
+                        <Table.Row key={area.id}>
+                          <Table.Cell>{area.name}</Table.Cell>
+                          <Table.Cell>{area.id}</Table.Cell>
+                          <Table.Cell>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="tertiary" onPress={() => openEdit(area)}>
+                                Editar
+                              </Button>
+                              <Button size="sm" variant="danger" onPress={() => openDelete(area)}>
+                                Excluir
+                              </Button>
+                            </div>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Content>
+                </Table.ScrollContainer>
+              </Table>
+            </div>
+
+            <div className="flex flex-col gap-3 md:hidden">
+              {areas.length === 0 ? (
+                <div className="text-muted rounded-xl border border-default bg-surface p-6 text-center text-sm">
+                  Nenhuma área encontrada.
+                </div>
+              ) : (
+                areas.map((area) => (
+                  <article
+                    key={area.id}
+                    className="rounded-xl border border-default bg-surface p-4 shadow-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{area.name}</p>
+                      <p className="text-muted mt-1 text-xs">ID #{area.id}</p>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="tertiary"
+                        onPress={() => openEdit(area)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="danger"
+                        onPress={() => openDelete(area)}
+                      >
+                        Excluir
+                      </Button>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </>
         )}
 
         {!isLoading && !error && totalPages > 1 && (
           <Pagination className="justify-center">
-            <Pagination.Content>
+            <Pagination.Content className="flex-wrap justify-center self-center">
               <Pagination.Item>
                 <Pagination.Previous
                   isDisabled={page === 1}

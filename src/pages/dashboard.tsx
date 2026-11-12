@@ -71,7 +71,7 @@ function PeriodFilters({
       ].map((filter) => (
         <Select
           key={filter.label}
-          className="min-w-36"
+          className="min-w-0 flex-1 sm:min-w-36 sm:flex-none"
           value={String(filter.value)}
           onChange={(value) => value !== null && filter.onChange(Number(value))}
         >
@@ -192,7 +192,7 @@ export default function DashboardPage() {
     <DefaultLayout>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Dashboard</h1>
           <p className="mt-1 text-sm text-muted">
             Acompanhe sua movimentação financeira em {formatPeriod(period.month, period.year)}.
           </p>

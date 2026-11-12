@@ -102,6 +102,48 @@ export const HeartFilledIcon = ({ size = 24, width, height, ...props }: IconSvgP
   </svg>
 );
 
+export const MenuIcon = ({ size = 24, width, height, ...props }: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M4 6H20M4 12H20M4 18H20"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
+export const CloseIcon = ({ size = 24, width, height, ...props }: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M6 6L18 18M18 6L6 18"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
 export const SearchIcon = (props: IconSvgProps) => (
   <svg
     aria-hidden="true"

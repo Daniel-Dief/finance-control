@@ -203,10 +203,10 @@ export default function TransactionsPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Transações</h1>
             <p className="text-muted text-sm">Gerencie as transações financeiras da sua conta.</p>
           </div>
-          <Button variant="primary" onPress={openCreate}>
+          <Button className="w-full sm:w-auto" variant="primary" onPress={openCreate}>
             Nova transação
           </Button>
         </div>
@@ -250,68 +250,129 @@ export default function TransactionsPage() {
             </Button>
           </div>
         ) : (
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Transações" className="min-w-[720px]">
-                <Table.Header>
-                  <Table.Column isRowHeader>Data</Table.Column>
-                  <Table.Column>Tipo</Table.Column>
-                  <Table.Column>Área</Table.Column>
-                  <Table.Column>Categoria</Table.Column>
-                  <Table.Column>Valor</Table.Column>
-                  <Table.Column>Ações</Table.Column>
-                </Table.Header>
-                <Table.Body
-                  renderEmptyState={() => (
-                    <div className="text-muted py-10 text-center">
-                      Nenhuma transação encontrada.
-                    </div>
-                  )}
-                >
-                  {transactions.map((transaction) => (
-                    <Table.Row key={transaction.id}>
-                      <Table.Cell>{formatDateByString(transaction.date)}</Table.Cell>
-                      <Table.Cell>
-                        <Chip
-                          color={transaction.type === 'income' ? 'success' : 'danger'}
-                          size="sm"
-                          variant="soft"
-                        >
-                          {transaction.type === 'income' ? 'Receita' : 'Despesa'}
-                        </Chip>
-                      </Table.Cell>
-                      <Table.Cell>{areaLabel(transaction.area_id)}</Table.Cell>
-                      <Table.Cell>{categoryLabel(transaction.category_id)}</Table.Cell>
-                      <Table.Cell>{formatCurrencyFromCents(transaction.amount)}</Table.Cell>
-                      <Table.Cell>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="tertiary"
-                            onPress={() => openEdit(transaction)}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="danger"
-                            onPress={() => openDelete(transaction)}
-                          >
-                            Excluir
-                          </Button>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <Table.ScrollContainer>
+                  <Table.Content aria-label="Transações" className="min-w-[720px]">
+                    <Table.Header>
+                      <Table.Column isRowHeader>Data</Table.Column>
+                      <Table.Column>Tipo</Table.Column>
+                      <Table.Column>Área</Table.Column>
+                      <Table.Column>Categoria</Table.Column>
+                      <Table.Column>Valor</Table.Column>
+                      <Table.Column>Ações</Table.Column>
+                    </Table.Header>
+                    <Table.Body
+                      renderEmptyState={() => (
+                        <div className="text-muted py-10 text-center">
+                          Nenhuma transação encontrada.
                         </div>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
+                      )}
+                    >
+                      {transactions.map((transaction) => (
+                        <Table.Row key={transaction.id}>
+                          <Table.Cell>{formatDateByString(transaction.date)}</Table.Cell>
+                          <Table.Cell>
+                            <Chip
+                              color={transaction.type === 'income' ? 'success' : 'danger'}
+                              size="sm"
+                              variant="soft"
+                            >
+                              {transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                            </Chip>
+                          </Table.Cell>
+                          <Table.Cell>{areaLabel(transaction.area_id)}</Table.Cell>
+                          <Table.Cell>{categoryLabel(transaction.category_id)}</Table.Cell>
+                          <Table.Cell>{formatCurrencyFromCents(transaction.amount)}</Table.Cell>
+                          <Table.Cell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="tertiary"
+                                onPress={() => openEdit(transaction)}
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                onPress={() => openDelete(transaction)}
+                              >
+                                Excluir
+                              </Button>
+                            </div>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Content>
+                </Table.ScrollContainer>
+              </Table>
+            </div>
+
+            <div className="flex flex-col gap-3 md:hidden">
+              {transactions.length === 0 ? (
+                <div className="text-muted rounded-xl border border-default bg-surface p-6 text-center text-sm">
+                  Nenhuma transação encontrada.
+                </div>
+              ) : (
+                transactions.map((transaction) => (
+                  <article
+                    key={transaction.id}
+                    className="rounded-xl border border-default bg-surface p-4 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-muted text-xs">{formatDateByString(transaction.date)}</p>
+                        <p className="mt-1 text-lg font-semibold tracking-tight">
+                          {formatCurrencyFromCents(transaction.amount)}
+                        </p>
+                      </div>
+                      <Chip
+                        color={transaction.type === 'income' ? 'success' : 'danger'}
+                        size="sm"
+                        variant="soft"
+                      >
+                        {transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                      </Chip>
+                    </div>
+                    <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                      <dt className="text-muted">Área</dt>
+                      <dd className="truncate text-right">{areaLabel(transaction.area_id)}</dd>
+                      <dt className="text-muted">Categoria</dt>
+                      <dd className="truncate text-right">
+                        {categoryLabel(transaction.category_id)}
+                      </dd>
+                    </dl>
+                    <div className="mt-4 flex gap-2">
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="tertiary"
+                        onPress={() => openEdit(transaction)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="danger"
+                        onPress={() => openDelete(transaction)}
+                      >
+                        Excluir
+                      </Button>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </>
         )}
 
         {!isLoading && !error && totalPages > 1 && (
           <Pagination className="justify-center">
-            <Pagination.Content>
+            <Pagination.Content className="flex-wrap justify-center self-center">
               <Pagination.Item>
                 <Pagination.Previous
                   isDisabled={page === 1}

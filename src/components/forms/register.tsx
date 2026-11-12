@@ -73,11 +73,11 @@ export default function RegisterForm({ setIsLogin }: Props) {
           </TextField>
         </div>
       </Card.Content>
-      <Card.Footer className="mt-4 flex justify-between gap-2">
-        <Button variant="tertiary" onPress={() => setIsLogin(true)}>
+      <Card.Footer className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+        <Button className="w-full sm:w-auto" variant="tertiary" onPress={() => setIsLogin(true)}>
           Entrar
         </Button>
-        <Button isPending={isLoading} type="submit" variant="primary">
+        <Button className="w-full sm:w-auto" isPending={isLoading} type="submit" variant="primary">
           {({ isPending }) => (isPending ? 'Cadastrando...' : 'Cadastrar')}
         </Button>
       </Card.Footer>

@@ -17,9 +17,9 @@ export default function LoginPage() {
 
   return (
     <div
-      className={`w-full h-screen relative flex justify-center items-center ${resolvedTheme === 'light' ? 'bg-white' : 'bg-gray-900'}`}
+      className={`relative flex min-h-dvh w-full items-center justify-center px-4 py-6 ${resolvedTheme === 'light' ? 'bg-white' : 'bg-gray-900'}`}
     >
-      <div className="w-full h-full absolute">
+      <div className="absolute inset-0 h-full w-full">
         <GradientWaves
           grain
           mouseInteraction
@@ -44,7 +44,7 @@ export default function LoginPage() {
         />
       </div>
       <Card
-        className={`w-full max-w-md rounded-lg ${resolvedTheme === 'dark' ? 'bg-[#101828]' : ''}`}
+        className={`relative z-10 w-full max-w-md rounded-lg ${resolvedTheme === 'dark' ? 'bg-[#101828]' : ''}`}
       >
         <Card.Header>
           <Card.Title

@@ -166,12 +166,12 @@ export default function BudgetsPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Orçamentos</h1>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Orçamentos</h1>
             <p className="text-muted text-sm">
               Defina quanto pretende gastar por área em cada período.
             </p>
           </div>
-          <Button variant="primary" onPress={openCreate}>
+          <Button className="w-full sm:w-auto" variant="primary" onPress={openCreate}>
             Novo orçamento
           </Button>
         </div>
@@ -215,46 +215,97 @@ export default function BudgetsPage() {
             </Button>
           </div>
         ) : (
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Orçamentos" className="min-w-[640px]">
-                <Table.Header>
-                  <Table.Column isRowHeader>Área</Table.Column>
-                  <Table.Column>Período</Table.Column>
-                  <Table.Column>Valor</Table.Column>
-                  <Table.Column>Ações</Table.Column>
-                </Table.Header>
-                <Table.Body
-                  renderEmptyState={() => (
-                    <div className="text-muted py-10 text-center">Nenhum orçamento encontrado.</div>
-                  )}
-                >
-                  {budgets.map((budget) => (
-                    <Table.Row key={budget.id}>
-                      <Table.Cell>{areaLabel(budget.area_id)}</Table.Cell>
-                      <Table.Cell>{formatPeriod(budget.month, budget.year)}</Table.Cell>
-                      <Table.Cell>{formatCurrencyFromCents(budget.amount)}</Table.Cell>
-                      <Table.Cell>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="tertiary" onPress={() => openEdit(budget)}>
-                            Editar
-                          </Button>
-                          <Button size="sm" variant="danger" onPress={() => openDelete(budget)}>
-                            Excluir
-                          </Button>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <Table.ScrollContainer>
+                  <Table.Content aria-label="Orçamentos" className="min-w-[640px]">
+                    <Table.Header>
+                      <Table.Column isRowHeader>Área</Table.Column>
+                      <Table.Column>Período</Table.Column>
+                      <Table.Column>Valor</Table.Column>
+                      <Table.Column>Ações</Table.Column>
+                    </Table.Header>
+                    <Table.Body
+                      renderEmptyState={() => (
+                        <div className="text-muted py-10 text-center">
+                          Nenhum orçamento encontrado.
                         </div>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
+                      )}
+                    >
+                      {budgets.map((budget) => (
+                        <Table.Row key={budget.id}>
+                          <Table.Cell>{areaLabel(budget.area_id)}</Table.Cell>
+                          <Table.Cell>{formatPeriod(budget.month, budget.year)}</Table.Cell>
+                          <Table.Cell>{formatCurrencyFromCents(budget.amount)}</Table.Cell>
+                          <Table.Cell>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="tertiary" onPress={() => openEdit(budget)}>
+                                Editar
+                              </Button>
+                              <Button size="sm" variant="danger" onPress={() => openDelete(budget)}>
+                                Excluir
+                              </Button>
+                            </div>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Content>
+                </Table.ScrollContainer>
+              </Table>
+            </div>
+
+            <div className="flex flex-col gap-3 md:hidden">
+              {budgets.length === 0 ? (
+                <div className="text-muted rounded-xl border border-default bg-surface p-6 text-center text-sm">
+                  Nenhum orçamento encontrado.
+                </div>
+              ) : (
+                budgets.map((budget) => (
+                  <article
+                    key={budget.id}
+                    className="rounded-xl border border-default bg-surface p-4 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{areaLabel(budget.area_id)}</p>
+                        <p className="text-muted mt-1 text-xs">
+                          {formatPeriod(budget.month, budget.year)}
+                        </p>
+                      </div>
+                      <p className="shrink-0 font-semibold">
+                        {formatCurrencyFromCents(budget.amount)}
+                      </p>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="tertiary"
+                        onPress={() => openEdit(budget)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        size="sm"
+                        variant="danger"
+                        onPress={() => openDelete(budget)}
+                      >
+                        Excluir
+                      </Button>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </>
         )}
 
         {!isLoading && !error && totalPages > 1 && (
           <Pagination className="justify-center">
-            <Pagination.Content>
+            <Pagination.Content className="flex-wrap justify-center self-center">
               <Pagination.Item>
                 <Pagination.Previous
                   isDisabled={page === 1}
