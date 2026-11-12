@@ -12,3 +12,9 @@ services:
       - NODE_ENV=production
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - finance-control-network
+
+networks:
+  finance-control-network:
+    external: true
