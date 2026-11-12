@@ -19,15 +19,16 @@ export function Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initSession = async () => {
       const state = useAuthStore.getState();
+      const hasSavedCredentials = Boolean(state.user?.login && state.password);
+      const needsNewToken = !state.token || isTokenExpired(state.token);
 
-      if (state.user && state.password) {
-        // Reaproveita o fluxo de refresh (sessão única, sem corrida com o
-        // interceptor de 401).
-        const token = await refreshToken();
-
-        if (!token) {
-          state.logout();
-        }
+      if (hasSavedCredentials && needsNewToken) {
+        // Token expirado/ausente: reconecta usando login e senha persistidos,
+        // sem passar pela tela de login.
+        await refreshToken();
+      } else if (!hasSavedCredentials && (state.token || state.isLoggedIn)) {
+        // Sessão sem credenciais não pode ser renovada; exige novo login.
+        state.logout();
       }
 
       setIsInitialized(true);
@@ -44,11 +45,11 @@ export function Provider({ children }: { children: React.ReactNode }) {
     const timer = window.setInterval(async () => {
       const state = useAuthStore.getState();
 
-      if (!state.token || !state.user || !state.password) {
+      if (!state.isLoggedIn) {
         return;
       }
 
-      if (isTokenExpired(state.token)) {
+      if (!state.token || isTokenExpired(state.token)) {
         await refreshToken();
       }
     }, REFRESH_INTERVAL_MS);

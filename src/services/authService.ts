@@ -1,6 +1,7 @@
 import type { LoginCredentials, LoginResponse, RegisterData, User } from '@/types/auth';
 
 import { apiClient } from '@/services/apiClient';
+import { buildBasicAuthHeader } from '@/utils/basicAuth';
 
 function decodeJwtPayload(value: string): Record<string, unknown> {
   const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
@@ -32,7 +33,9 @@ export function isTokenExpired(token: string, skewMs = EXPIRY_SKEW_MS): boolean 
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const { data } = await apiClient.post<LoginResponse>('/auth/login', credentials);
+    const { data } = await apiClient.post<LoginResponse>('/auth/login', undefined, {
+      headers: { Authorization: buildBasicAuthHeader(credentials.login, credentials.password) }
+    });
 
     return data;
   },

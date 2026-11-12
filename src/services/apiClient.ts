@@ -3,6 +3,7 @@ import type { LoginResponse } from '@/types/auth';
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 import { useAuthStore } from '@/stores/authStore';
+import { buildBasicAuthHeader } from '@/utils/basicAuth';
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:1323';
 
@@ -29,31 +30,46 @@ let retryQueue: RetryQueueItem[] = [];
 
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
+  const isAuthRequest = config.url?.includes('/auth/') ?? false;
 
-  if (token) {
+  if (token && !isAuthRequest) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
 });
 
+/**
+ * Tenta renovar a sessão usando o login e a senha persistidos no Zustand.
+ * Retorna o novo token ou `null` quando não há credenciais salvas ou quando o
+ * backend recusa a conexão. Nos dois casos a sessão é encerrada, o que leva o
+ * usuário para a tela de login.
+ */
 export async function refreshToken(): Promise<string | null> {
-  const { user, password } = useAuthStore.getState();
+  const state = useAuthStore.getState();
+  const { user, password } = state;
 
-  if (!user || !password) {
+  if (!user?.login || !password) {
+    // Sem credenciais persistidas não há como renovar automaticamente.
+    if (state.isLoggedIn || state.token) {
+      state.logout();
+    }
+
     return null;
   }
 
   try {
-    const { data } = await refreshClient.post<LoginResponse>('/auth/login', {
-      login: user.login,
-      password
+    const { data } = await refreshClient.post<LoginResponse>('/auth/login', undefined, {
+      headers: { Authorization: buildBasicAuthHeader(user.login, password) }
     });
 
+    // Mantém as credenciais salvas para as próximas renovações.
     useAuthStore.getState().login(data.token, data.user, password);
 
     return data.token;
   } catch {
+    // Credenciais recusadas ou backend indisponível: limpa a sessão para que
+    // o usuário informe login e senha novamente.
     useAuthStore.getState().logout();
 
     return null;
@@ -98,8 +114,11 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as RetriableConfig | undefined;
 
     const isUnauthorized = error.response?.status === 401;
+    // O próprio login/registro não deve disparar uma tentativa de renovação:
+    // um 401 nesses endpoints significa credenciais inválidas.
+    const isAuthRequest = originalRequest?.url?.includes('/auth/') ?? false;
 
-    if (!isUnauthorized || !originalRequest || originalRequest._retry) {
+    if (!isUnauthorized || !originalRequest || originalRequest._retry || isAuthRequest) {
       return Promise.reject(error);
     }
 
