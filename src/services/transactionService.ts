@@ -1,6 +1,6 @@
 import type {
   Transaction,
-  TransactionPayload,
+  TransactionCreatePayload,
   TransactionType,
   TransactionUpdatePayload,
   PaginatedResult
@@ -49,7 +49,7 @@ export const transactionService = {
 
     return data;
   },
-  async create(payload: TransactionPayload): Promise<Transaction> {
+  async create(payload: TransactionCreatePayload): Promise<Transaction> {
     const { data } = await apiClient.post<Transaction>('/transactions/create', payload);
 
     return data;

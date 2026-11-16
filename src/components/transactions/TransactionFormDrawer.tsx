@@ -1,7 +1,7 @@
 import type { DateValue, Key } from '@heroui/react';
 import type { Area } from '@/types/area';
 import type { Category } from '@/types/category';
-import type { Transaction, TransactionType } from '@/types/transaction';
+import type { Transaction, TransactionCreatePayload, TransactionType } from '@/types/transaction';
 
 import { useMemo, useState } from 'react';
 import {
@@ -9,6 +9,7 @@ import {
   Calendar,
   DateField,
   DatePicker,
+  Description,
   Form,
   Input,
   Label,
@@ -64,6 +65,7 @@ export default function TransactionFormDrawer({
   const [dateSelected, setDateSelected] = useState<DateValue | null>(() =>
     getDefaultDate(transaction)
   );
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState<DateValue | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const currentFormKey = isOpen ? String(transaction?.id ?? 'new') : null;
@@ -78,6 +80,7 @@ export default function TransactionFormDrawer({
       setCategoryId(transaction ? String(transaction.category_id) : null);
       setAmountCents(transaction ? transaction.amount : null);
       setDateSelected(getDefaultDate(transaction));
+      setRecurrenceEndDate(null);
       setError(null);
     }
   }
@@ -93,7 +96,8 @@ export default function TransactionFormDrawer({
       areaId,
       categoryId,
       date: dateSelected,
-      amountCents
+      amountCents,
+      recurrenceEndDate
     });
 
     if (!validated.isValid) {
@@ -118,8 +122,19 @@ export default function TransactionFormDrawer({
         await transactionService.update(transaction.id, payload);
         toast.success('Transação atualizada com sucesso.');
       } else {
-        await transactionService.create(payload);
-        toast.success('Transação criada com sucesso.');
+        const createPayload: TransactionCreatePayload = recurrenceEndDate
+          ? {
+              ...payload,
+              recurrence_end_date: formatDateToApi(recurrenceEndDate.toDate(getLocalTimeZone()))
+            }
+          : payload;
+
+        await transactionService.create(createPayload);
+        toast.success(
+          recurrenceEndDate
+            ? 'Transações recorrentes criadas com sucesso.'
+            : 'Transação criada com sucesso.'
+        );
       }
 
       onSaved();
@@ -311,6 +326,54 @@ export default function TransactionFormDrawer({
             </Calendar>
           </DatePicker.Popover>
         </DatePicker>
+
+        {isEditing ? null : (
+          <DatePicker
+            className="w-full"
+            minValue={dateSelected ?? undefined}
+            name="recurrence_end_date"
+            value={recurrenceEndDate}
+            onChange={setRecurrenceEndDate}
+          >
+            <Label>Repetir até</Label>
+            <DateField.Group fullWidth>
+              <DateField.Input>
+                {(segment) => <DateField.Segment segment={segment} />}
+              </DateField.Input>
+              <DateField.Suffix>
+                <DatePicker.Trigger>
+                  <DatePicker.TriggerIndicator />
+                </DatePicker.Trigger>
+              </DateField.Suffix>
+            </DateField.Group>
+            <Description>
+              Opcional. Cria uma transação por mês, no mesmo dia, até esta data.
+            </Description>
+            <DatePicker.Popover>
+              <Calendar aria-label="Data final da recorrência">
+                <Calendar.Header>
+                  <Calendar.YearPickerTrigger>
+                    <Calendar.YearPickerTriggerHeading />
+                    <Calendar.YearPickerTriggerIndicator />
+                  </Calendar.YearPickerTrigger>
+                  <Calendar.NavButton slot="previous" />
+                  <Calendar.NavButton slot="next" />
+                </Calendar.Header>
+                <Calendar.Grid>
+                  <Calendar.GridHeader>
+                    {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
+                  </Calendar.GridHeader>
+                  <Calendar.GridBody>{(date) => <Calendar.Cell date={date} />}</Calendar.GridBody>
+                </Calendar.Grid>
+                <Calendar.YearPickerGrid>
+                  <Calendar.YearPickerGridBody>
+                    {({ year }) => <Calendar.YearPickerCell year={year} />}
+                  </Calendar.YearPickerGridBody>
+                </Calendar.YearPickerGrid>
+              </Calendar>
+            </DatePicker.Popover>
+          </DatePicker>
+        )}
 
         <TextField isRequired name="amount" value={amountText} onChange={handleAmountChange}>
           <Label>Valor</Label>

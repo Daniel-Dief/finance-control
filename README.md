@@ -19,7 +19,7 @@ O frontend consome uma API REST configurável por variável de ambiente e foi co
   - acompanhamento do percentual gasto de cada orçamento.
 - **Áreas e categorias:** listagem com busca por nome, paginação e CRUD em drawers.
 - **Orçamentos:** CRUD, filtros por área, mês e ano e paginação.
-- **Transações:** CRUD, filtros por área, categoria e mês, paginação e seleção de tipo (receita/despesa).
+- **Transações:** CRUD, filtros por área, categoria e mês, paginação, seleção de tipo (receita/despesa) e criação de transações recorrentes com data final opcional.
 - **Tema claro/escuro:** preferência persistida no navegador.
 - **Experiência de uso:** carregamento sob demanda das páginas, estados de loading/erro/vazio, confirmação de exclusão e notificações via toast.
 
@@ -156,6 +156,7 @@ A URL base é definida por `VITE_API_URL`. As requisições autenticadas enviam 
 - **Paginação:** parâmetros `page` e `limit`; resposta com `data`, `page`, `limit`, `total` e `total_pages`.
 - **Listas vazias:** a API pode responder `204 No Content`; os services convertem isso em uma página vazia.
 - **Relatórios:** aceitam `year` e `month`; os gráficos de linha e radar também aceitam `type`, e o radar aceita `area_ids` separados por vírgula. O relatório por categoria da área recebe o `id` da área na rota e aceita `type` (`income` ou `expense`, padrão `expense`).
+- **Recorrência:** `POST /transactions/create` aceita `recurrence_end_date` opcional (`AAAA-MM-DD`), gerando ocorrências mensais até a data limite, que é inclusiva.
 
 ## Autenticação e sessão
 

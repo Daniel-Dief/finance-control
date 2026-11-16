@@ -60,6 +60,7 @@ interface formsTransactionsValidateProps {
   categoryId: Key | null;
   date: DateValue | null;
   amountCents: number | null;
+  recurrenceEndDate?: DateValue | null;
 }
 
 export function formsTransactionsValidate(props: formsTransactionsValidateProps): ValidateResult {
@@ -85,6 +86,13 @@ export function formsTransactionsValidate(props: formsTransactionsValidateProps)
 
   if (props.amountCents === null || props.amountCents <= 0) {
     return { isValid: false, error: 'Informe o valor da transação.' };
+  }
+
+  if (props.recurrenceEndDate && props.date && props.recurrenceEndDate.compare(props.date) < 0) {
+    return {
+      isValid: false,
+      error: 'A data final da recorrência não pode ser anterior à data da transação.'
+    };
   }
 
   return { isValid: true, error: '' };

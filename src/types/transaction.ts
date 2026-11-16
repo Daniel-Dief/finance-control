@@ -20,4 +20,8 @@ export interface TransactionPayload {
   date: string;
 }
 
+export interface TransactionCreatePayload extends TransactionPayload {
+  recurrence_end_date?: string;
+}
+
 export type TransactionUpdatePayload = Partial<TransactionPayload>;
