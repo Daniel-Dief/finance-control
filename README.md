@@ -15,6 +15,7 @@ O frontend consome uma API REST configurável por variável de ambiente e foi co
   - KPIs de receitas, despesas e saldo por mês/ano;
   - gráfico de linhas da movimentação diária ou semanal;
   - gráfico radar por área, com filtro de áreas;
+  - gráfico de pizza da movimentação por categoria, com seleção de área e tipo;
   - acompanhamento do percentual gasto de cada orçamento.
 - **Áreas e categorias:** listagem com busca por nome, paginação e CRUD em drawers.
 - **Orçamentos:** CRUD, filtros por área, mês e ano e paginação.
@@ -138,14 +139,14 @@ A URL base é definida por `VITE_API_URL`. As requisições autenticadas enviam 
 
 ### Endpoints utilizados
 
-| Recurso      | Endpoints                                                                                                                              |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Autenticação | `POST /auth/login`, `POST /auth/register`                                                                                              |
-| Áreas        | `GET /areas/list`, `GET /areas/{id}`, `POST /areas/create`, `PUT /areas/{id}`, `DELETE /areas/{id}`                                    |
-| Categorias   | `GET /categories/list`, `GET /categories/{id}`, `POST /categories/create`, `PUT /categories/{id}`, `DELETE /categories/{id}`           |
-| Orçamentos   | `GET /budgets/list`, `GET /budgets/{id}`, `POST /budgets/create`, `PUT /budgets/{id}`, `DELETE /budgets/{id}`                          |
-| Transações   | `GET /transactions/list`, `GET /transactions/{id}`, `POST /transactions/create`, `PUT /transactions/{id}`, `DELETE /transactions/{id}` |
-| Relatórios   | `GET /reports/kpis`, `GET /reports/line-chart`, `GET /reports/radar-chart`, `GET /reports/budgets`                                     |
+| Recurso      | Endpoints                                                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Autenticação | `POST /auth/login`, `POST /auth/register`                                                                                                |
+| Áreas        | `GET /areas/list`, `GET /areas/{id}`, `POST /areas/create`, `PUT /areas/{id}`, `DELETE /areas/{id}`                                      |
+| Categorias   | `GET /categories/list`, `GET /categories/{id}`, `POST /categories/create`, `PUT /categories/{id}`, `DELETE /categories/{id}`             |
+| Orçamentos   | `GET /budgets/list`, `GET /budgets/{id}`, `POST /budgets/create`, `PUT /budgets/{id}`, `DELETE /budgets/{id}`                            |
+| Transações   | `GET /transactions/list`, `GET /transactions/{id}`, `POST /transactions/create`, `PUT /transactions/{id}`, `DELETE /transactions/{id}`   |
+| Relatórios   | `GET /reports/kpis`, `GET /reports/line-chart`, `GET /reports/radar-chart`, `GET /reports/areas/{id}/categories`, `GET /reports/budgets` |
 
 ### Convenções da API
 
@@ -154,7 +155,7 @@ A URL base é definida por `VITE_API_URL`. As requisições autenticadas enviam 
 - **Tipo de transação:** `income` (receita) ou `expense` (despesa).
 - **Paginação:** parâmetros `page` e `limit`; resposta com `data`, `page`, `limit`, `total` e `total_pages`.
 - **Listas vazias:** a API pode responder `204 No Content`; os services convertem isso em uma página vazia.
-- **Relatórios:** aceitam `year` e `month`; os gráficos de linha e radar também aceitam `type`, e o radar aceita `area_ids` separados por vírgula.
+- **Relatórios:** aceitam `year` e `month`; os gráficos de linha e radar também aceitam `type`, e o radar aceita `area_ids` separados por vírgula. O relatório por categoria da área recebe o `id` da área na rota e aceita `type` (`income` ou `expense`, padrão `expense`).
 
 ## Autenticação e sessão
 

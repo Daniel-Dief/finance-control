@@ -4,6 +4,7 @@ import { Alert, Label, ListBox, Select, Spinner } from '@heroui/react';
 import { useMemo, useState } from 'react';
 
 import BudgetsPercent from '@/components/dashboards/BudgetsPercent';
+import CategoriesPieChart from '@/components/dashboards/CategoriesPieChart';
 import KPIs from '@/components/dashboards/KPIs';
 import LineChart from '@/components/dashboards/LineChart';
 import RadarChart from '@/components/dashboards/RadarChart';
@@ -100,8 +101,10 @@ export default function DashboardPage() {
   const { resolvedTheme } = useThemeContext();
   const [lineType, setLineType] = useState<ReportTransactionType>('expense');
   const [radarType, setRadarType] = useState<ReportTransactionType>('expense');
+  const [categoryType, setCategoryType] = useState<ReportTransactionType>('expense');
   const [granularity, setGranularity] = useState<Granularity>('daily');
   const [selectedAreaIds, setSelectedAreaIds] = useState<number[]>([]);
+  const [categoryAreaId, setCategoryAreaId] = useState<number | null>(null);
   const [period, setPeriod] = useState({ month: currentMonth, year: currentYear });
 
   const {
@@ -126,6 +129,22 @@ export default function DashboardPage() {
     () => areaService.list({ limit: 100 }),
     [],
     'Não foi possível carregar as áreas.'
+  );
+
+  const areas = areasPage?.data ?? [];
+  const selectedCategoryArea = areas.find((area) => area.id === categoryAreaId) ?? areas[0] ?? null;
+
+  const {
+    data: categoryReport,
+    error: categoryError,
+    isLoading: isCategoryLoading
+  } = useAsyncData(
+    () =>
+      selectedCategoryArea
+        ? reportService.areaCategories(selectedCategoryArea.id, { type: categoryType })
+        : Promise.resolve(null),
+    [selectedCategoryArea?.id, categoryType],
+    'Não foi possível carregar o gráfico por categoria.'
   );
   const {
     data: lineReport,
@@ -176,12 +195,13 @@ export default function DashboardPage() {
         }
       : {})
   };
-  const error = kpiError ?? budgetError ?? lineError ?? radarError;
+  const error = kpiError ?? budgetError ?? lineError ?? radarError ?? categoryError;
   const isInitialLoading =
     (isKpiLoading && !kpis) ||
     (isBudgetLoading && !budgetReport) ||
     (isLineLoading && !lineReport) ||
-    (isRadarLoading && !radarReport);
+    (isRadarLoading && !radarReport) ||
+    (isCategoryLoading && !categoryReport);
   const toggleArea = (areaId: number) => {
     setSelectedAreaIds((current) =>
       current.includes(areaId) ? current.filter((id) => id !== areaId) : [...current, areaId]
@@ -258,6 +278,19 @@ export default function DashboardPage() {
               type={radarType}
               onAreaToggle={toggleArea}
               onTypeChange={setRadarType}
+            />
+            <CategoriesPieChart
+              areaId={selectedCategoryArea?.id ?? null}
+              areaName={selectedCategoryArea?.name}
+              areas={areas}
+              categories={categoryReport?.categories ?? []}
+              chartSx={chartSx}
+              chartTextColor={chartTextColor}
+              error={categoryError}
+              isLoading={isCategoryLoading}
+              type={categoryType}
+              onAreaChange={setCategoryAreaId}
+              onTypeChange={setCategoryType}
             />
             <section className="rounded-2xl border border-default bg-surface p-5 shadow-sm">
               <h2 className="text-lg font-semibold">Progresso de orçamentos</h2>

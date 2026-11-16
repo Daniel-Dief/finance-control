@@ -1,4 +1,5 @@
 import type {
+  AreaCategoryReport,
   BudgetReport,
   LineChartReport,
   RadarChartReport,
@@ -32,6 +33,18 @@ export const reportService = {
     params: ReportPeriod & { type: ReportTransactionType; area_ids?: string }
   ): Promise<RadarChartReport> {
     const { data } = await apiClient.get<RadarChartReport>('/reports/radar-chart', { params });
+
+    return data;
+  },
+
+  async areaCategories(
+    areaId: number,
+    params: { type?: ReportTransactionType } = {}
+  ): Promise<AreaCategoryReport> {
+    const { data } = await apiClient.get<AreaCategoryReport>(
+      `/reports/areas/${areaId}/categories`,
+      { params }
+    );
 
     return data;
   },

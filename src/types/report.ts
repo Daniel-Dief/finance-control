@@ -38,6 +38,19 @@ export interface RadarChartReport {
   type: ReportTransactionType;
 }
 
+export interface AreaCategoryReportItem {
+  category_id: number;
+  category_name: string;
+  amount: number;
+}
+
+export interface AreaCategoryReport {
+  area_id: number;
+  area_name: string;
+  type: ReportTransactionType;
+  categories: AreaCategoryReportItem[];
+}
+
 export interface BudgetProgress {
   id: number;
   area_id: number;
