@@ -202,11 +202,6 @@ export default function DashboardPage() {
     (isLineLoading && !lineReport) ||
     (isRadarLoading && !radarReport) ||
     (isCategoryLoading && !categoryReport);
-  const toggleArea = (areaId: number) => {
-    setSelectedAreaIds((current) =>
-      current.includes(areaId) ? current.filter((id) => id !== areaId) : [...current, areaId]
-    );
-  };
 
   return (
     <DefaultLayout>
@@ -276,7 +271,7 @@ export default function DashboardPage() {
               resolvedTheme={resolvedTheme}
               selectedAreaIds={selectedAreaIds}
               type={radarType}
-              onAreaToggle={toggleArea}
+              onAreasChange={setSelectedAreaIds}
               onTypeChange={setRadarType}
             />
             <CategoriesPieChart
