@@ -141,9 +141,13 @@ export default function DashboardPage() {
   } = useAsyncData(
     () =>
       selectedCategoryArea
-        ? reportService.areaCategories(selectedCategoryArea.id, { type: categoryType })
+        ? reportService.areaCategories(selectedCategoryArea.id, {
+            year: period.year,
+            month: period.month,
+            type: categoryType
+          })
         : Promise.resolve(null),
-    [selectedCategoryArea?.id, categoryType],
+    [selectedCategoryArea?.id, categoryType, period.month, period.year],
     'Não foi possível carregar o gráfico por categoria.'
   );
   const {
@@ -283,7 +287,9 @@ export default function DashboardPage() {
               chartTextColor={chartTextColor}
               error={categoryError}
               isLoading={isCategoryLoading}
+              month={period.month}
               type={categoryType}
+              year={period.year}
               onAreaChange={setCategoryAreaId}
               onTypeChange={setCategoryType}
             />

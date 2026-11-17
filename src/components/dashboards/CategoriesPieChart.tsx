@@ -4,7 +4,7 @@ import type { AreaCategoryReportItem, ReportTransactionType } from '@/types/repo
 import { Label, ListBox, Select, Spinner } from '@heroui/react';
 import { PieChart as MUIPieChart } from '@mui/x-charts/PieChart';
 
-import { formatCurrencyFromCents } from '@/utils/format';
+import { formatCurrencyFromCents, formatPeriod } from '@/utils/format';
 
 const EXPENSE_COLORS = [
   '#b91c1c',
@@ -38,6 +38,8 @@ export default function CategoriesPieChart({
   areaId,
   areaName,
   type,
+  month,
+  year,
   isLoading,
   error,
   chartTextColor,
@@ -50,6 +52,8 @@ export default function CategoriesPieChart({
   areaId: number | null;
   areaName: string | undefined;
   type: ReportTransactionType;
+  month: number;
+  year: number;
   isLoading: boolean;
   error: string | null;
   chartTextColor: string;
@@ -67,8 +71,8 @@ export default function CategoriesPieChart({
           <h2 className="text-lg font-semibold">Movimentação por categoria</h2>
           <p className="text-sm text-muted">
             {areaName
-              ? `Total de ${typeLabel} em ${areaName} por categoria.`
-              : `Total de ${typeLabel} por categoria na área selecionada.`}
+              ? `Total de ${typeLabel} em ${areaName} por categoria em ${formatPeriod(month, year)}.`
+              : `Total de ${typeLabel} por categoria na área selecionada em ${formatPeriod(month, year)}.`}
           </p>
         </div>
         <div className="flex flex-wrap gap-3">

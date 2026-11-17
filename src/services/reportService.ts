@@ -39,7 +39,7 @@ export const reportService = {
 
   async areaCategories(
     areaId: number,
-    params: { type?: ReportTransactionType } = {}
+    params: ReportPeriod & { type?: ReportTransactionType } = {}
   ): Promise<AreaCategoryReport> {
     const { data } = await apiClient.get<AreaCategoryReport>(
       `/reports/areas/${areaId}/categories`,
